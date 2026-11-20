@@ -1,0 +1,97 @@
+2026-11-20T10:17:34+00:00
+uid=0(root) gid=0(root) groups=0(root)
+PRETTY_NAME="Armbian 26.8.3 resolute"
+NAME="Ubuntu"
+VERSION_ID="26.04"
+VERSION="26.04 (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.armbian.com"
+SUPPORT_URL="https://forum.armbian.com"
+BUG_REPORT_URL="https://www.armbian.com/bugs"
+PRIVACY_POLICY_URL="https://www.armbian.com"
+UBUNTU_CODENAME=resolute
+LOGO="armbian-logo"
+ARMBIAN_PRETTY_NAME="Armbian 26.8.3 resolute"
+Linux rock-5b 6.1.115-vendor-rk35xx #1 SMP Tue Aug 18 19:55:13 UTC 2026 aarch64 GNU/Linux
+
+Architecture: arm64
+glibc 2.43
+
+Model: Radxa ROCK 5B
+
+Kernel command line:
+root=UUID=6cd90ba7-4e8b-44ba-9506-5782ae9f876f rootwait rootfstype=ext4 splash=verbose console=ttyS2,1500000 console=tty1 consoleblank=0 loglevel=1 ubootpart=4d7f7054-c189-4f01-b48d-fa0134bcd690 usb-storage.quirks= cma=256M  cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory androidboot.fwver=bl31-v1.48,uboot-rmbian-201-08/20/2026
+
+Loader:
+lrwxrwxrwx 1 root root 39 Jul 22 17:24 /lib/ld-linux-aarch64.so.1 -> aarch64-linux-gnu/ld-linux-aarch64.so.1
+
+CPU:
+Architecture:                         aarch64
+CPU op-mode(s):                       32-bit, 64-bit
+Byte Order:                           Little Endian
+CPU(s):                               8
+On-line CPU(s) list:                  0-7
+Vendor ID:                            ARM
+Model name:                           Cortex-A55
+Model:                                0
+Thread(s) per core:                   1
+Core(s) per socket:                   4
+Socket(s):                            1
+Stepping:                             r2p0
+CPU(s) scaling MHz:                   100%
+CPU max MHz:                          1800.0000
+CPU min MHz:                          408.0000
+BogoMIPS:                             48.00
+Flags:                                fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+Model name:                           Cortex-A76
+Model:                                0
+Thread(s) per core:                   1
+Core(s) per socket:                   4
+Socket(s):                            1
+Stepping:                             r4p0
+CPU(s) scaling MHz:                   26%
+CPU max MHz:                          2352.0000
+CPU min MHz:                          408.0000
+BogoMIPS:                             48.00
+Flags:                                fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+L1d cache:                            384 KiB (8 instances)
+L1i cache:                            384 KiB (8 instances)
+L2 cache:                             2.5 MiB (8 instances)
+L3 cache:                             3 MiB (1 instance)
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:             Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; CSV2, BHB
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+
+Storage:
+Filesystem     Type   Size  Used Avail Use% Mounted on
+tmpfs          tmpfs  793M   12M  782M   2% /run
+/dev/mmcblk1p1 ext4    29G  1.5G   28G   6% /
+tmpfs          tmpfs  3.9G     0  3.9G   0% /dev/shm
+tmpfs          tmpfs  3.9G     0  3.9G   0% /tmp
+/dev/zram1     ext4    47M  800K   43M   2% /var/log
+tmpfs          tmpfs  793M  4.0K  793M   1% /run/user/1000
+tmpfs          tmpfs  793M  4.0K  793M   1% /run/user/0
+
+Tools:
+/usr/bin/sh
+/usr/bin/bash
+/usr/bin/tar
+/usr/bin/scp
+/usr/bin/ldd
+/usr/sbin/ldconfig
+/usr/bin/python3
+
+REMOTE_EXIT=0

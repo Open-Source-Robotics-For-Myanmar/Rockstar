@@ -1,0 +1,6 @@
+[submodule "RockChip-NPU"]
+	path = RockChip-NPU
+	url = git@github.com:Open-Source-Robotics-For-Myanmar/RockChip-NPU.git
+[submodule "vision_ai_box"]
+	path = vision_ai_box
+	url = git@github.com:Open-Source-Robotics-For-Myanmar/vision_ai_box.git
