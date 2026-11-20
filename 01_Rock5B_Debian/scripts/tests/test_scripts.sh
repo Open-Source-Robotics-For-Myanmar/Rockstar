@@ -43,6 +43,18 @@ payload=$(cat)
 # Check remote shell syntax without executing it.
 bash -n <<< "$payload"
 if [[ ${MOCK_FAIL:-0} == 1 ]]; then exit 7; fi
+if [[ ${MOCK_ARCHIVE:-0} == 1 ]]; then
+    case "$payload" in
+      *'exec tar --numeric-owner -C / -cf - --'*)
+        tar -C "$MOCK_ARCHIVE_SOURCE" -cf - .
+        ;;
+      *)
+        echo 'Unexpected remote archive command' >&2
+        exit 1
+        ;;
+    esac
+    exit 0
+fi
 if [[ ${MOCK_INVENTORY:-0} == 1 ]]; then
     case "$payload" in
       *'cat /etc/os-release'*)
@@ -114,6 +126,17 @@ grep -q 'libstdc++-16-dev=16-20260322-1ubuntu1' "$requirements" || {
     exit 1
 }
 grep -q 'RKNPU driver:\*\* v0.9.8' "$requirements"
+# Fetch a tar archive through the script without a board or Python.
+mkdir -p "$WORK/archive-source/usr/include"
+printf 'mock header\n' > "$WORK/archive-source/usr/include/mock.h"
+printf 'board\n\n\n' | MOCK_ARCHIVE=1 MOCK_ARCHIVE_SOURCE="$WORK/archive-source" \
+    bash "$WORK/scripts/04_fetch_sysroot_archive_from_board.sh" > "$WORK/archive.log"
+archive=$(find "$WORK/scripts/sysroot_archive" -maxdepth 1 -name '*.tar' -print -quit)
+[[ -s $archive ]]
+tar -tf "$archive" | grep -q './usr/include/mock.h'
+[[ -s $archive.sha256 ]]
+(cd "$(dirname "$archive")" && sha256sum -c "$(basename "$archive").sha256" >/dev/null)
+! grep -q 'python' "$WORK/scripts/04_fetch_sysroot_archive_from_board.sh"
 # Ensure SSH errors are reported as failures.
 if printf 'board\nroot\n22\n' | MOCK_FAIL=1 bash "$WORK/scripts/03_check_base_dependencies.sh" > "$WORK/failure.log" 2>&1; then
     echo 'FAIL: SSH failure was ignored'; exit 1

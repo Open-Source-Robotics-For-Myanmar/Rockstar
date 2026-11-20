@@ -159,7 +159,7 @@ cat > "$RESULT_DIR/SDK_REQUIREMENTS.md" <<REQUIREMENTS
 
 | Item | Detected value |
 |---|---|
-| Board model | $(first_match system '^Model:') |
+| Board model | $(first_match system '^Model:' | sed 's/^Model: *//') |
 | OS | ${OS_NAME:-NOT FOUND IN INVENTORY} |
 | OS codename | ${OS_CODENAME:-NOT FOUND IN INVENTORY} |
 | Target architecture | ${TARGET_ARCH:-NOT FOUND IN INVENTORY} |

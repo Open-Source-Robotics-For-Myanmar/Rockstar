@@ -17,33 +17,29 @@ Requirements ဖိုင်ထဲမှာ `NOT REPORTED`, `NOT FOUND` သိ�
 
 ## ၂။ Board မှ runtime files ကို host ဆီကူးပါ
 
-Host ပေါ်တွင် Bash terminal တစ်ခုတည်း၌ အောက်ပါအတိုင်း run ပါ။ `BASE` ကို results folder၊ `TARGET` ကို သင့် SSH user/IP ဖြင့် ပြင်ပါ။ Board တွင် archive ဖိုင်မရေးပါ၊ package မတင်ပါ။
+Host မှ script ကို run ပါ။ Board IP/hostname, SSH user, port ကို အပြန်အလှန်မေးပါမည်။ Password လိုလျှင် SSH က prompt ပြမည်။ Archive ကို host ပေါ်ရှိ `scripts/sysroot_archive/` ထဲသိမ်းပြီး board ပေါ်တွင် ဖိုင်မရေး၊ package မတင်ပါ။
 
 ```bash
 set -euo pipefail
+cd /path/to/Rockstar/01_Rock5B_Debian/scripts
+./04_fetch_sysroot_archive_from_board.sh
+```
+
+ထို့နောက် archive ကို SDK folder ထဲကူးပါ။ `BASE` နှင့် `SDK` ကို ကိုယ့်စက်အတွက်ပြင်ပါ။
+
+```bash
 export BASE="$HOME/path/to/check_results/<result-folder>"
-export TARGET=rock@192.168.1.15
 export SDK="$HOME/rock5b-sdk-archive"
+ARCHIVE=$(find ./sysroot_archive -maxdepth 1 -type f -name 'rock5b-sysroot-*.tar' -print | sort | tail -n1)
 
 test -s "$BASE/SDK_REQUIREMENTS.md"
 test "$(sed -n 's/^| Target architecture | \(.*\) |$/\1/p' "$BASE/SDK_REQUIREMENTS.md" | head -n1)" = arm64
+test -s "$ARCHIVE"
 mkdir -p "$SDK/base" "$SDK/metadata"
 cp "$BASE/SDK_REQUIREMENTS.md" "$SDK/base/"
-
-set -o pipefail
-ssh "$TARGET" 'sh -s' > "$SDK/base/target-libs.tar" <<'SH'
-set -eu
-cd /
-set --
-for p in lib lib64 usr/lib usr/include usr/share/pkgconfig usr/local/lib usr/local/include; do
-    if [ -e "$p" ] || [ -L "$p" ]; then set -- "$@" "$p"; fi
-done
-tar -cf - "$@"
-SH
-
-test -s "$SDK/base/target-libs.tar"
-tar -tf "$SDK/base/target-libs.tar" > "$SDK/metadata/archive-files.txt"
+cp "$ARCHIVE" "$SDK/base/target-libs.tar"
 sha256sum "$SDK/base/target-libs.tar" > "$SDK/metadata/target-libs.tar.sha256"
+tar -tf "$SDK/base/target-libs.tar" > "$SDK/metadata/archive-files.txt"
 ```
 
 SSH, `tar`, သို့မဟုတ် permission error ဖြစ်လျှင် archive မပြည့်စုံနိုင်သဖြင့် ရပ်ပြီး error ကိုဖြေရှင်းပါ။ ဒီ archive က `/lib`, `/lib64`, `/usr/lib`, `/usr/include`, pkg-config metadata နဲ့ `/usr/local` ထဲက သတ်မှတ်ထားသော folder များကိုသာ ကူးသည်။ `/opt` ထဲက manually installed vendor files မပါပါ။
@@ -63,23 +59,18 @@ mkdir -p "$SDK/sysroot"
 tar --no-same-owner -xf "$SDK/base/target-libs.tar" -C "$SDK/sysroot"
 ```
 
-Absolute symlink များက host ၏ root filesystem ဆီ မညွှန်စေရန် sysroot အတွင်းသို့ ပြန်ညွှန်ပါ:
+Python မသုံးဘဲ absolute symlink များကို sysroot အတွင်းက target ဆီ relative အဖြစ်ပြောင်းပါ။ ဤအဆင့်တွင် GNU `realpath` ပါသော coreutils လိုသည်။
 
 ```bash
-python3 - "$SDK/sysroot" <<'PY'
-import os
-import sys
-
-root = os.path.abspath(sys.argv[1])
-for directory, dirs, files in os.walk(root, followlinks=False):
-    for name in dirs + files:
-        path = os.path.join(directory, name)
-        if os.path.islink(path):
-            target = os.readlink(path)
-            if target.startswith("/"):
-                os.unlink(path)
-                os.symlink(os.path.relpath(root + target, directory), path)
-PY
+while IFS= read -r -d '' link; do
+    target=$(readlink -- "$link")
+    case "$target" in
+        /*)
+            relative_target=$(realpath -m -s --relative-to="${link%/*}" -- "$SDK/sysroot$target")
+            ln -sfn -- "$relative_target" "$link"
+            ;;
+    esac
+done < <(find "$SDK/sysroot" -type l -print0)
 ```
 
 ## ၄။ ပါ/မပါ စစ်ပြီး လိုအပ်တာဖြည့်ပါ
