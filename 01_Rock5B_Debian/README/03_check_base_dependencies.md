@@ -1,6 +1,6 @@
 # ၀၃ — Base OS အချက်အလက် စစ်ခြင်း
 
-**ရည်ရွယ်ချက်:** Board ကို package install/update မလုပ်ဘဲ လက်ရှိ versions ကို host တွင် မှတ်တမ်းယူရန်။ အောက်ပါ commands အားလုံး **host PC** မှ run ပါ။ SSH login log များတော့ OS က ပုံမှန်ရေးနိုင်သည်။
+**ရည်ရွယ်ချက်:** Board ကို package install/update မလုပ်ဘဲ လက်ရှိ versions ကို host တွင် မှတ်တမ်းယူရန်နှင့် `SDK_REQUIREMENTS.md` ထုတ်ရန်။ အောက်ပါ commands အားလုံး **host PC** မှ run ပါ။ SSH login log များတော့ OS က ပုံမှန်ရေးနိုင်သည်။
 
 ## လက်ရှိ သိထားသောအချက်
 
@@ -70,4 +70,4 @@ Archive က runtime baseline ဖြစ်သည်။ Minimal OS မှာ build
 - [ ] Board တွင် `apt install/upgrade`၊ driver ပြောင်းခြင်း မလုပ်ထားပါ။
 - [ ] App လိုအပ်သော GPU/NPU driver က base OS တွင်ရှိပြီး အလုပ်လုပ်သည်။ မရှိလျှင် app `.so` ထည့်ရုံဖြင့် မဖြည့်နိုင်ပါ။
 
-ဆက်ရန်: [၀၄ — Archive သုံးပြီး SDK ပြင်ရန်](04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [၀၅ — Archive မပါဘဲ SDK ပြင်ရန်](05_create_cross_compiler_without_sysroot_archive.md) ကိုရွေးပြီး [၀၆ — SCP deploy](06_deploy_sample_cpp.md) ကိုဆက်လုပ်ပါ။
+Run ပြီးလျှင် result folder ထဲက `SDK_REQUIREMENTS.md` ကို အရင်ဖတ်ပါ။ ထို့နောက် [၀၄ — Archive သုံးပြီး sysroot ပြင်ရန်](04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [၀၅ — Archive မပါဘဲ package မှ sysroot ပြင်ရန်](05_create_cross_compiler_without_sysroot_archive.md) ကိုရွေးပါ။
