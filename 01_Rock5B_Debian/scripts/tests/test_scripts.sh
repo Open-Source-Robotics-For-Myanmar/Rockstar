@@ -163,10 +163,67 @@ MOCK_MOUNT=''
 check_disk
 CHECK
 bash "$WORK/check-disk-test.sh" "$WORK/check-disk.sh"
+# Build a no-sysroot SDK with mocked host tools; no package manager or board is used.
+mkdir -p "$WORK/fake-toolchain"
+cat > "$WORK/fake-toolchain/mock-tool" <<'MOCK_TOOL'
+#!/usr/bin/env bash
+case ${0##*/} in
+  *-gcc|*g++)
+    if [[ ${1-} == -dumpmachine ]]; then
+        printf 'aarch64-linux-gnu\n'
+    else
+        printf 'mock AArch64 compiler 1.0\n'
+    fi
+    ;;
+  *) printf 'mock host tool 1.0\n' ;;
+esac
+MOCK_TOOL
+chmod +x "$WORK/fake-toolchain/mock-tool"
+for tool in aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ \
+    aarch64-linux-gnu-ar aarch64-linux-gnu-ranlib aarch64-linux-gnu-strip \
+    aarch64-linux-gnu-readelf pkg-config cmake ninja; do
+    ln -s mock-tool "$WORK/fake-toolchain/$tool"
+done
+sdk_root="$WORK/SDK with spaces"
+mkdir -p "$WORK/standalone"
+standalone_script="$WORK/standalone/05_create_RK3588_SDK_env_without_sysroot.sh"
+cp "$SOURCE_DIR/05_create_RK3588_SDK_env_without_sysroot.sh" "$standalone_script"
+! grep -q 'common.sh' "$standalone_script"
+PATH="$WORK/fake-toolchain:$PATH" \
+SDK_ROOT="$sdk_root" \
+TARGET_BOARD='Radxa ROCK 5B' TARGET_COMPATIBLE='rockchip,rk3588' \
+TARGET_ARCH=arm64 TARGET_OS='Armbian Ubuntu' TARGET_CODENAME=resolute \
+TARGET_KERNEL='6.1.115-vendor-rk35xx' TARGET_GLIBC=2.43 \
+TARGET_LIBSTDCXX=16 CONFIRM_CREATE=yes \
+    bash "$standalone_script" --non-interactive \
+    > "$WORK/sdk-setup.log"
+[[ -s "$sdk_root/env.sh" && -x "$sdk_root/bin/rk3588-pkg-config" ]]
+[[ -s "$sdk_root/toolchains/rk3588.cmake" && -s "$sdk_root/metadata/target-baseline.md" ]]
+grep -q '| Architecture | aarch64 |' "$sdk_root/metadata/target-baseline.md"
+grep -q 'CMAKE_CXX_COMPILER' "$sdk_root/toolchains/rk3588.cmake"
+bash -n "$sdk_root/env.sh" "$sdk_root/bin/rk3588-pkg-config"
+grep -q 'mock AArch64 compiler 1.0' "$sdk_root/metadata/host.txt"
+interactive_home="$WORK/interactive-home"
+interactive_sdk="$interactive_home/RK3588_SDK_on_Ubuntu2204"
+mkdir -p "$interactive_home"
+printf 'Radxa ROCK 5B\nrockchip,rk3588\narm64\nArmbian Ubuntu\nresolute\n6.1.115-vendor-rk35xx\n2.43\n16\n\nyes\n' |
+    HOME="$interactive_home" PATH="$WORK/fake-toolchain:$PATH" \
+    bash "$standalone_script" \
+    > "$WORK/sdk-interactive.log"
+[[ -s "$interactive_sdk/env.sh" ]]
+grep -q "$interactive_sdk" "$WORK/sdk-interactive.log"
+if PATH="$WORK/fake-toolchain:$PATH" SDK_ROOT="$sdk_root" \
+    TARGET_BOARD=x TARGET_COMPATIBLE=rockchip,rk3588 TARGET_ARCH=arm64 TARGET_OS=z \
+    TARGET_CODENAME=z TARGET_KERNEL=z TARGET_GLIBC=z TARGET_LIBSTDCXX=z \
+    CONFIRM_CREATE=yes bash "$standalone_script" \
+    --non-interactive > "$WORK/sdk-rerun.log" 2>&1; then
+    echo 'FAIL: SDK setup overwrote an existing directory'; exit 1
+fi
+grep -q 'Choose a new SDK_ROOT' "$WORK/sdk-rerun.log"
 # Reject invalid menu choices before any disk operation.
 mkdir -p "$WORK/vendor_images"
 printf fixture > "$WORK/vendor_images/sample.img.xz"
 if printf '99\n' | bash "$WORK/scripts/01_flash_sdcard.sh" > "$WORK/flash.log" 2>&1; then
     echo 'FAIL: bad image index accepted'; exit 1
 fi
-echo 'PASS: Bash syntax, 14 menu payloads, dependency payloads, SSH failure, RK3588 guard, mounted-disk guards, invalid image choice.'
+echo 'PASS: Bash syntax, SDK setup prompts and overwrite guard, 14 menu payloads, dependency payloads, SSH failure, RK3588 guard, mounted-disk guards, invalid image choice.'
