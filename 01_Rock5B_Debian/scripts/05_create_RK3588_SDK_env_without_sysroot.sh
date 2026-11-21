@@ -5,6 +5,118 @@ INTERACTIVE=1
 SDK_DEFAULT=${SDK_ROOT:-"$HOME/RK3588_SDK_on_Ubuntu2204"}
 TMP_SDK=
 
+# Colours are decorative only: plain logs, redirected output and NO_COLOR stay
+# ANSI-free. FORCE_COLOR=1 overrides the TTY check when you want coloured logs.
+USE_COLOR=0
+if [[ -t 1 && -z ${NO_COLOR:-} && ${TERM:-dumb} != dumb ]]; then
+    USE_COLOR=1
+fi
+[[ ${FORCE_COLOR:-} != 1 ]] || USE_COLOR=1
+if (( USE_COLOR )); then
+    C_RESET=$'\033[0m'
+    C_BOLD=$'\033[1m'
+    C_DIM=$'\033[2m'
+    C_RED=$'\033[1;31m'
+    C_GREEN=$'\033[1;32m'
+    C_YELLOW=$'\033[1;33m'
+    C_BLUE=$'\033[1;34m'
+    C_CYAN=$'\033[1;36m'
+else
+    C_RESET= C_BOLD= C_DIM= C_RED= C_GREEN= C_YELLOW= C_BLUE= C_CYAN=
+fi
+
+help_line() {
+    local tag=$1 text=$2 color=${3:-}
+    if [[ -n $tag ]]; then
+        printf '  %s%-11s%s %s\n' "$color" "$tag" "$C_RESET" "$text"
+    else
+        printf '               %s%s%s\n' "$color" "$text" "$C_RESET"
+    fi
+}
+
+# One canonical source for the field text: --help and the prompts both render it.
+field_help() {
+    case $1 in
+        TARGET_BOARD)
+            help_line 'On target:' "tr -d '\\0' < /proc/device-tree/model; echo" "$C_GREEN"
+            help_line '' "grep -E '^(BOARD_NAME|BOARD)=' /etc/armbian-release" "$C_DIM"
+            help_line 'Enter:' 'one line, e.g. "Radxa ROCK 5B". Why: board identity in metadata; no compiler effect.' "$C_YELLOW"
+            ;;
+        TARGET_COMPATIBLE)
+            help_line 'On target:' "tr '\\0' '\\n' < /proc/device-tree/compatible | grep -m1 rk3588" "$C_GREEN"
+            help_line '' 'prints one value, e.g. rockchip,rk3588' "$C_DIM"
+            help_line 'Enter:' 'ONE line containing rk3588, e.g. "rockchip,rk3588".' "$C_YELLOW"
+            help_line 'Why:' 'guard against the wrong SoC; multi-line values break the markdown table.' "$C_BLUE"
+            ;;
+        TARGET_ARCH)
+            help_line 'On target:' 'dpkg --print-architecture (arm64)  |  uname -m (aarch64)' "$C_GREEN"
+            help_line 'Enter:' 'arm64 or aarch64 (normalised to aarch64). Why: confirms a 64-bit ARM target.' "$C_YELLOW"
+            ;;
+        TARGET_OS)
+            help_line 'On target:' ". /etc/os-release; printf '%s\\n' \"\$PRETTY_NAME\"" "$C_GREEN"
+            help_line 'Enter:' 'e.g. "Debian GNU/Linux 12 (bookworm)". Why: records the target userspace.' "$C_YELLOW"
+            ;;
+        TARGET_CODENAME)
+            help_line 'On target:' ". /etc/os-release; printf '%s\\n' \"\$VERSION_CODENAME\"" "$C_GREEN"
+            help_line '' 'if empty, use VERSION_ID or "unknown"' "$C_DIM"
+            help_line 'Enter:' 'e.g. "bookworm", "jammy". Why: pins the exact userspace release.' "$C_YELLOW"
+            ;;
+        TARGET_KERNEL)
+            help_line 'On target:' 'uname -r   (not uname -v)' "$C_GREEN"
+            help_line 'Enter:' 'e.g. "6.1.115-vendor-rk35xx". Why: kernel UAPI compatibility note (no headers installed).' "$C_YELLOW"
+            ;;
+        TARGET_GLIBC)
+            help_line 'On target:' "getconf GNU_LIBC_VERSION | awk '{print \$2}'" "$C_GREEN"
+            help_line '' 'ldd --version | head -n1 prints a whole banner - enter only the number' "$C_DIM"
+            help_line 'Enter:' 'version number, e.g. "2.36".' "$C_YELLOW"
+            help_line 'Why:' 'ABI check - host cross glibc here is 2.35; the board needs >= that or a matching sysroot.' "$C_BLUE"
+            ;;
+        TARGET_LIBSTDCXX)
+            help_line 'On target:' "dpkg-query -W -f='\${Version}\\n' libstdc++6:arm64" "$C_GREEN"
+            help_line '' 'strings /usr/lib/aarch64-linux-gnu/libstdc++.so.6 | grep -m1 GLIBCXX_' "$C_DIM"
+            help_line 'Enter:' 'package version, e.g. "12.3.0-1ubuntu1~22.04.3", or the highest GLIBCXX_ symbol.' "$C_YELLOW"
+            help_line 'Why:' 'C++ ABI check against host libstdc++ 12.3.0 (GCC 11); older board symbols break C++ binaries.' "$C_BLUE"
+            ;;
+        SDK_ROOT)
+            help_line 'On host:' 'not a board value - choose a LOCAL destination directory.' "$C_GREEN"
+            help_line 'Enter:' 'absolute path that does not exist yet, e.g. "$HOME/RK3588_SDK_on_Ubuntu2204".' "$C_YELLOW"
+            help_line 'Why:' 'generated files go here; existing directories are never modified.' "$C_BLUE"
+            ;;
+    esac
+}
+
+print_field_help() {
+    local key=$1 item field title
+    if [[ $key == ALL ]]; then
+        printf '%s%s%s\n' "$C_BOLD" 'HOW TO COLLECT EVERY PROMPTED VALUE' "$C_RESET"
+        printf '%s\n' \
+            'Run each "On target" command on the TARGET BOARD (the RK3588 board), not on the' \
+            'build host. Enter only the value, not the label and not the whole command.' \
+            'Every target value is metadata only: metadata/*.txt, metadata/target-baseline.md' \
+            'and the summary. Nothing here downloads, installs or configures the compiler.' \
+            'Use "unknown" when unavailable; board/model, compatible and architecture are checked.'
+        printf '\n'
+        for item in \
+            'TARGET_BOARD|1) Target board/model' \
+            'TARGET_COMPATIBLE|2) Device-tree compatible value' \
+            'TARGET_ARCH|3) Target architecture (arm64/aarch64)' \
+            'TARGET_OS|4) Target OS name' \
+            'TARGET_CODENAME|5) Target OS codename' \
+            'TARGET_KERNEL|6) Target kernel release' \
+            'TARGET_GLIBC|7) Target GNU libc version' \
+            'TARGET_LIBSTDCXX|8) Target libstdc++ runtime version' \
+            'SDK_ROOT|9) SDK workspace path (HOST, not the board)'; do
+            field=${item%%|*}
+            title=${item#*|}
+            printf '%s%s%s\n' "$C_BOLD$C_CYAN" "$title" "$C_RESET"
+            field_help "$field"
+            printf '\n'
+        done
+    else
+        field_help "$key"
+    fi
+}
+
 usage() {
     cat <<'USAGE'
 Create a standalone ARM64 cross-compilation workspace without a target sysroot.
@@ -35,8 +147,15 @@ Environment overrides:
   PKG_CONFIG           Host pkg-config command
   CMAKE                CMake command
   NINJA                Ninja command
-  READELF             Target readelf command
+  READELF              Target readelf command
   CONFIRM_CREATE       Set to yes to confirm in --non-interactive mode
+
+USAGE
+    print_field_help ALL
+    cat <<'USAGE'
+Configuration is printed for review at the end; type "yes" to create the
+workspace. In --non-interactive mode, set every TARGET_* variable plus
+SDK_ROOT and CONFIRM_CREATE=yes; the values are never guessed.
 
 The target details are recorded as user-provided metadata. They are not used to
 download packages or construct a target sysroot.
@@ -44,7 +163,7 @@ USAGE
 }
 
 fail() {
-    printf 'ERROR: %s\n' "$*" >&2
+    printf '%sERROR:%s %s\n' "$C_RED" "$C_RESET" "$*" >&2
     exit 1
 }
 
@@ -68,14 +187,15 @@ for arg in "$@"; do
 done
 
 prompt_value() {
-    local variable=$1 label=$2 default=${3-} required=${4:-0} reply
+    local variable=$1 label=$2 default=${3-} required=${4:-0} reply prompt
     if (( INTERACTIVE )); then
         if [[ -n $default ]]; then
-            read -r -p "$label [$default]: " reply || fail "Input ended while asking: $label"
-            reply=${reply:-$default}
+            prompt="${C_CYAN}${label}${C_RESET} [${default}]: "
         else
-            read -r -p "$label: " reply || fail "Input ended while asking: $label"
+            prompt="${C_CYAN}${label}${C_RESET}: "
         fi
+        read -r -p "$prompt" reply || fail "Input ended while asking: $label"
+        reply=${reply:-$default}
     else
         reply=$default
     fi
@@ -83,6 +203,13 @@ prompt_value() {
         fail "$label is required. Set $variable or run interactively."
     fi
     printf -v "$variable" '%s' "$reply"
+}
+
+prompt_field() {
+    local variable=$1 label=$2 default=${3-}
+    printf '\n%s=== %s ===%s\n' "$C_BOLD$C_CYAN" "$label" "$C_RESET"
+    field_help "$variable"
+    prompt_value "$variable" "$label" "$default" 1
 }
 
 need_command() {
@@ -106,35 +233,30 @@ if [[ -r /etc/os-release ]]; then
     HOST_OS_VERSION=${VERSION_ID:-unknown}
 fi
 
-printf 'Host: %s (%s)\n' "$HOST_OS" "$(uname -m)"
-printf 'This setup creates a generic ARM64/Linux GNU cross-toolchain workspace.\n'
-printf 'It does not create a target sysroot or install/download dependencies.\n\n'
+printf '%sHost:%s %s (%s)\n' "$C_BOLD" "$C_RESET" "$HOST_OS" "$(uname -m)"
+printf '%sThis setup creates a generic ARM64/Linux GNU cross-toolchain workspace.%s\n' "$C_DIM" "$C_RESET"
+printf '%sIt does not create a target sysroot or install/download dependencies.%s\n\n' "$C_DIM" "$C_RESET"
 
+printf '%s%s%s\n' "$C_BOLD" 'On the TARGET BOARD terminal, run read-only commands and keep the output.' "$C_RESET"
 printf '%s\n' \
-    'On the TARGET BOARD terminal, run the following read-only commands and keep the output:' \
-    '  printf "architecture: "; dpkg --print-architecture' \
-    '  cat /etc/os-release' \
-    '  printf "kernel: "; uname -r' \
-    '  getconf GNU_LIBC_VERSION' \
-    '  tr "\0" "\n" < /proc/device-tree/compatible' \
-    '  dpkg-query -W -f='"'"'${binary:Package}\t${Version}\t${Architecture}\n'"'"' libc6:arm64 libstdc++6:arm64 libgcc-s1:arm64 2>/dev/null || true' \
-    'Use the results below when prompted. If a value is unavailable, enter unknown.'
+    'Each prompt below shows the exact command, an example value, and why it is needed.' \
+    'Use "unknown" for unavailable values. Run this script with --help for the full guide.'
 printf '\n'
 
-prompt_value TARGET_BOARD 'Target board/model' "${TARGET_BOARD:-}" 1
-prompt_value TARGET_COMPATIBLE 'Device-tree compatible value' "${TARGET_COMPATIBLE:-}" 1
+prompt_field TARGET_BOARD 'Target board/model' "${TARGET_BOARD:-}"
+prompt_field TARGET_COMPATIBLE 'Device-tree compatible value' "${TARGET_COMPATIBLE:-}"
 [[ ${TARGET_COMPATIBLE,,} == *rk3588* ]] ||
     fail "Device-tree compatible value must identify RK3588, not '$TARGET_COMPATIBLE'."
-prompt_value TARGET_ARCH 'Target architecture (arm64/aarch64)' "${TARGET_ARCH:-}" 1
+prompt_field TARGET_ARCH 'Target architecture (arm64/aarch64)' "${TARGET_ARCH:-}"
 case ${TARGET_ARCH,,} in
     arm64|aarch64) TARGET_ARCH=aarch64 ;;
     *) fail "Target architecture must be arm64/aarch64, not '$TARGET_ARCH'." ;;
 esac
-prompt_value TARGET_OS 'Target OS name' "${TARGET_OS:-unknown}" 1
-prompt_value TARGET_CODENAME 'Target OS codename' "${TARGET_CODENAME:-unknown}" 1
-prompt_value TARGET_KERNEL 'Target kernel release' "${TARGET_KERNEL:-unknown}" 1
-prompt_value TARGET_GLIBC 'Target GNU libc version' "${TARGET_GLIBC:-unknown}" 1
-prompt_value TARGET_LIBSTDCXX 'Target libstdc++ runtime version' "${TARGET_LIBSTDCXX:-unknown}" 1
+prompt_field TARGET_OS 'Target OS name' "${TARGET_OS:-unknown}"
+prompt_field TARGET_CODENAME 'Target OS codename' "${TARGET_CODENAME:-unknown}"
+prompt_field TARGET_KERNEL 'Target kernel release' "${TARGET_KERNEL:-unknown}"
+prompt_field TARGET_GLIBC 'Target GNU libc version' "${TARGET_GLIBC:-unknown}"
+prompt_field TARGET_LIBSTDCXX 'Target libstdc++ runtime version' "${TARGET_LIBSTDCXX:-unknown}"
 
 CROSS_COMPILE=${CROSS_COMPILE:-aarch64-linux-gnu-}
 C_COMPILER=${C_COMPILER:-"${CROSS_COMPILE}gcc"}
@@ -172,11 +294,7 @@ C_MACHINE=$("$C_COMPILER" -dumpmachine) ||
 C_COMPILER_VERSION=$("$C_COMPILER" --version | sed -n '1p')
 CXX_COMPILER_VERSION=$("$CXX_COMPILER" --version | sed -n '1p')
 
-if [[ -z ${SDK_ROOT:-} ]]; then
-    prompt_value SDK_ROOT 'Absolute SDK workspace path' "$SDK_DEFAULT" 1
-else
-    prompt_value SDK_ROOT 'Absolute SDK workspace path' "$SDK_ROOT" 1
-fi
+prompt_field SDK_ROOT 'Absolute SDK workspace path (on host)' "$SDK_DEFAULT"
 [[ $SDK_ROOT == /* ]] || fail "SDK_ROOT must be an absolute path."
 [[ $SDK_ROOT != / ]] || fail "SDK_ROOT cannot be the filesystem root."
 [[ $SDK_ROOT != *$'\n'* ]] || fail "SDK_ROOT cannot contain a newline."
@@ -193,7 +311,7 @@ done
 
 cat <<SUMMARY
 
-Review the setup configuration:
+${C_BOLD}${C_CYAN}Review the setup configuration:${C_RESET}
   Host OS:              $HOST_OS ($HOST_OS_VERSION, x86_64)
   Target board:         $TARGET_BOARD
   Device compatible:    $TARGET_COMPATIBLE
@@ -206,14 +324,14 @@ Review the setup configuration:
   Cross C++ compiler:    $CXX_COMPILER ($CXX_MACHINE)
   SDK workspace:        $SDK_ROOT
 
-Important: these board values are metadata only. The SDK will use the host
+${C_YELLOW}Important:${C_RESET} these board values are metadata only. The SDK will use the host
 cross-compiler's built-in headers/libraries and will not match a target sysroot.
 Third-party libraries (including RKNN and libdatachannel) are not installed.
 SUMMARY
 
 if [[ ${CONFIRM_CREATE:-} != yes ]]; then
     if (( INTERACTIVE )); then
-        read -r -p 'Create this SDK workspace? Type yes to continue: ' CONFIRM_CREATE ||
+        read -r -p "${C_YELLOW}Create this SDK workspace?${C_RESET} Type yes to continue: " CONFIRM_CREATE ||
             fail 'Input ended before confirmation.'
     else
         fail 'Set CONFIRM_CREATE=yes to create the workspace in non-interactive mode.'
@@ -329,6 +447,6 @@ mv -Tn -- "$TMP_SDK" "$SDK_ROOT"
     fail "SDK destination appeared during setup; no existing files were overwritten: $SDK_ROOT"
 TMP_SDK=
 
-printf '\nSDK environment created: %s\n' "$SDK_ROOT"
-printf 'Activate in this terminal with:\n  source "%s/env.sh"\n' "$SDK_ROOT"
+printf '\n%sSDK environment created:%s %s\n' "$C_GREEN" "$C_RESET" "$SDK_ROOT"
+printf '%sActivate in this terminal with:%s\n  source "%s/env.sh"\n' "$C_BOLD" "$C_RESET" "$SDK_ROOT"
 printf 'Build a smoke-test project by following README/08_build_smoke_test_project.md.\n'

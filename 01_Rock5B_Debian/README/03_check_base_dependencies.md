@@ -1,8 +1,8 @@
-# ၀၃ — Base OS အချက်အလက် စစ်ခြင်း
+# $\color{#00c853}{\text{၀၃ — Base OS အချက်အလက် စစ်ခြင်း}}$
 
 **ရည်ရွယ်ချက်:** Board ကို package install/update မလုပ်ဘဲ လက်ရှိ versions ကို host တွင် မှတ်တမ်းယူရန်နှင့် `SDK_REQUIREMENTS.md` ထုတ်ရန်။ အောက်ပါ commands အားလုံး **host PC** မှ run ပါ။ SSH login log များတော့ OS က ပုံမှန်ရေးနိုင်သည်။
 
-## လက်ရှိ သိထားသောအချက်
+## $\color{red}{\text{လက်ရှိ သိထားသောအချက်}}$
 
 | စက် | OS / architecture |
 |---|---|
@@ -11,7 +11,7 @@
 
 Board kernel၊ architecture၊ glibc နှင့် vendor runtime versions ကို အောက်ပါအတိုင်း ထပ်ယူရမည်။ OS အမည်တစ်ခုတည်းဖြင့် မခန့်မှန်းပါနှင့်။
 
-## ၁။ Host မှ board inventory ယူရန်
+## $\color{red}{\text{၁။ Host မှ board inventory ယူရန်}}$
 
 `TARGET` ကို မိမိ SSH user/IP ဖြင့်ပြင်ပါ။ နောက်ဖိုင်များတွင်လည်း တူညီစွာသုံးပါ။
 
@@ -41,7 +41,7 @@ grep -Ei 'libc6|libstdc|libgcc|rknn|rga|mali|mpp|linux-image' "$SDK/base/package
 
 **စစ်ရန်:** `arm64` / `aarch64`၊ glibc version၊ kernel version နှင့် loader ရှိရမည်။ Package စာရင်းတွင်မပါသော manually installed `.so` များလည်း ရှိနိုင်သည်။
 
-## ၂။ Base libraries ကို host ဆီဖတ်ကူးရန်
+## $\color{red}{\text{၂။ Base libraries ကို host ဆီဖတ်ကူးရန်}}$
 
 Board တွင် ယာယီဖိုင်မဖန်တီးပါ။ SSH မှ tar stream ဖြင့်ကူးပြီး **host ပေါ်မှာသာ** သိမ်းသည်။ Board package update/install လုပ်နေစဉ် မကူးပါနှင့်။
 
@@ -64,10 +64,16 @@ sha256sum "$SDK/base/target-libs.tar" > "$SDK/base/target-libs.tar.sha256"
 
 Archive က runtime baseline ဖြစ်သည်။ Minimal OS မှာ build headers မပါနိုင်လို့ ဒီ archive တစ်ခုတည်းနဲ့ SDK မပြည့်သေးပါ။
 
-## ၃။ ပြီးဆုံးစစ်ချက်
+## $\color{red}{\text{၃။ ပြီးဆုံးစစ်ချက်}}$
 
 - [ ] `system.txt`၊ `packages.tsv`၊ `libc6.version`၊ `target-libs.tar` သိမ်းပြီးပြီ။
 - [ ] Board တွင် `apt install/upgrade`၊ driver ပြောင်းခြင်း မလုပ်ထားပါ။
 - [ ] App လိုအပ်သော GPU/NPU driver က base OS တွင်ရှိပြီး အလုပ်လုပ်သည်။ မရှိလျှင် app `.so` ထည့်ရုံဖြင့် မဖြည့်နိုင်ပါ။
 
 Run ပြီးလျှင် result folder ထဲက `SDK_REQUIREMENTS.md` ကို အရင်ဖတ်ပါ။ ထို့နောက် [၀၄ — Archive သုံးပြီး sysroot ပြင်ရန်](04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [၀၅ — Archive မပါဘဲ package မှ sysroot ပြင်ရန်](05_create_cross_compiler_without_sysroot_archive.md) ကိုရွေးပါ။
+
+References:
+- `./01_Rock5B_Debian/README/03_check_base_dependencies.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`
+

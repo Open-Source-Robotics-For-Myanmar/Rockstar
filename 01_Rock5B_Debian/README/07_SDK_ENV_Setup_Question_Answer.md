@@ -1,8 +1,8 @@
-# ROCK 5B / RK3588 SDK Environment Setup — မေးခွန်းနှင့်အဖြေများ
+# $\color{#00c853}{\text{ROCK 5B / RK3588 SDK Environment Setup — မေးခွန်းနှင့်အဖြေများ}}$
 
 ဤစာတမ်းတွင် `07_create_RK3588_SDK_env_on_ubuntu2204.md` လမ်းညွှန်အတိုင်း တည်ဆောက်သော host-side SDK environment ဆိုင်ရာ မေးခွန်းများနှင့် အဖြေများကို စုစည်းထားသည်။
 
-## ၁။ SDK workspace ၏ သဘောသဘာဝ
+## $\color{red}{\text{၁။ SDK workspace ၏ သဘောသဘာဝ}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> အခုလို `RK3588_SDK_on_Ubuntu2204` folder က standard SDK environment folder တစ်ခုပဲလား၊ ကိုယ့်ဘာသာ ထင်ရာမြင်ရာလုပ်ထားတာလား။</span></p>
 
@@ -12,7 +12,7 @@
 
 <p><span style="color: blue"><strong>သိထားရန်:</strong> ဒီ SDK setup က target board အတွက် full sysroot တစ်ခုကို မတည်ဆောက်ထားပါ။ `CMAKE_SYSROOT` ကို မသတ်မှတ်ဘဲ Ubuntu cross compiler ရဲ့ built-in target headers/libraries ကို အခြေခံထားပြီး `prefix` ထဲတွင် RKNN ကဲ့သို့ app သီးသန့် vendor library များကို ထည့်နိုင်အောင် ပြင်ထားတာပါ။ ထို့ကြောင့် “standard SDK folder” ထက် “standard cross-compilation tools ကို အသုံးပြုထားသော project-specific SDK workspace” ဟု နားလည်တာ ပိုမှန်ပါတယ်။</span></p>
 
-## ၂။ ကိုယ့် C++ project ကို SDK workspace ထဲက build လုပ်ခြင်း
+## $\color{red}{\text{၂။ ကိုယ့် C++ project ကို SDK workspace ထဲက build လုပ်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> အခု C++ project တစ်ခုကို စပြီး build တော့မယ်ဆိုရင် project ကို `src/` folder ထဲ link ထိုးပြီး build လုပ်လို့ရမလား။</span></p>
 
@@ -31,7 +31,7 @@ cmake --build "$RK3588_SDK/build/my-cpp-app" --parallel "$(nproc)"</code></pre>
 
 <p><span style="color: blue"><strong>သတိပြုရန်:</strong> `src/my-cpp-app` သည် source ကိုညွှန်တဲ့ link သာဖြစ်ပြီး build output ကို သိမ်းတဲ့နေရာမဟုတ်ပါ။ Build files နှင့် output များကို `build/my-cpp-app` ထဲထားခြင်းဖြင့် project source tree ကို မရှုပ်စေပါ။ `src/my-cpp-app` ရှိပြီးသားဆို `ln -s` ကို ထပ်မလုပ်ပါနှင့်။ Project တွင် CMake မသုံးပါက build command ကို project ရဲ့ build system အလိုက်ပြောင်းသော်လည်း cross compiler/toolchain ကို အတိအကျသုံးပါ။</span></p>
 
-## ၃။ Internet မရှိသော board သို့ application deploy လုပ်ခြင်း
+## $\color{red}{\text{၃။ Internet မရှိသော board သို့ application deploy လုပ်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Board ရဲ့ OS ပဲရှိပြီး dependency တွေကို update/install မလုပ်နိုင်ပါ။ Offline ဖြစ်တဲ့အတွက် project binary နဲ့ runtime dependencies တွေကိုပါ ထည့်ပေးရမယ်ဆိုရင် deployment တစ်ခုမှာ ဘာတွေပါရမလဲ။</span></p>
 
@@ -62,7 +62,7 @@ cmake --build "$RK3588_SDK/build/my-cpp-app" --parallel "$(nproc)"</code></pre>
 
 <p><span style="color: blue"><strong>မထည့်ရန်:</strong> C/C++ source, CMake build directory, compiler, development headers (`*.h`) နဲ့ `.a` static development libraries တွေကို app runtime မှာ မလိုအပ်လျှင် deploy package ထဲ မထည့်ပါ။ အဓိကက app ကို clean board ပေါ်မှာ offline run စမ်းပြီး အမှန်တကယ်လိုအပ်တဲ့ runtime, data နဲ့ OS/hardware prerequisites အားလုံးကို သီးခြားအတည်ပြုရန်ဖြစ်ပါတယ်။</span></p>
 
-## ၄။ Project လိုအပ်သော C++ version ရွေးချယ်ခြင်း
+## $\color{red}{\text{၄။ Project လိုအပ်သော C++ version ရွေးချယ်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> ငါ့ project က C++ version ကွဲတယ်ဆိုရင် ဘယ်လိုလုပ်မလဲ။</span></p>
 
@@ -78,7 +78,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)</code></pre>
 
 <p><span style="color: blue"><strong>အရေးကြီးသော ကွာခြားချက်:</strong> C++ standard သည် source code ဘာသာစကား feature များကို ရွေးတာဖြစ်ပြီး target board ပေါ်ရှိ `libstdc++.so.6` ကို အစားထိုးရွေးတာ မဟုတ်ပါ။ Build ပြီးနောက် binary ရဲ့ `GLIBCXX_*` လိုအပ်ချက်များနှင့် target ပေးနိုင်သော version ကို `aarch64-linux-gnu-readelf --version-info` ဖြင့်နှိုင်းယှဉ်ပြီး board ပေါ်မှာ `ldd`/run test လုပ်ပါ။ GCC 11 cross compiler ၏ C++ headers နဲ့ မတူညီသော compiler ၏ target libraries ကို ရောမသုံးပါနှင့်။ Compiler feature သို့မဟုတ် dependency က GCC 11 ထက်သစ်သော compiler လိုအပ်လျှင် host toolchain ကို သင့်လျော်စွာပြောင်းပြီး compatible sysroot/runtime ဖြင့် ပြန်တည်ဆောက်ရပါမယ်။</span></p>
 
-## ၅။ C++ cross-compilation အတွက် GUI tools
+## $\color{red}{\text{၅။ C++ cross-compilation အတွက် GUI tools}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> ဒီလိုမျိုး C++ SDK ကို အလွယ်တကူတည်ဆောက်လို့ရအောင် လုပ်ပေးထားတဲ့ GUI tools တွေရှိသလား။</span></p>
 
@@ -93,3 +93,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)</code></pre>
 <p><span style="color: blue"><strong>ဒီ SDK အတွက် အကြံပြုချက်:</strong> Ubuntu 22.04 host ပေါ်မှာ VS Code နဲ့ CMake Tools ကိုသုံးပြီး လက်ရှိ 07 မှာဖန်တီးထားတဲ့ `rk3588.cmake` ကို project configure မှာချိတ်ပါ။ Project တစ်ခုစီရဲ့ C++ standard ကို `CMakeLists.txt` သို့မဟုတ် preset ထဲသတ်မှတ်ပြီး build output ကို သီးခြား `build/<project>` directory ထဲထားပါ။ Board deploy က သီးခြားအဆင့်ဖြစ်ပြီး 08 smoke-test လမ်းညွှန်အတိုင်း package/runtime စစ်ဆေးမှုကို ဆက်လုပ်ပါ။</span></p>
 
 <p><span style="color: blue"><strong>သတိပြုရန်:</strong> GUI တစ်ခုတည်းနဲ့ target ရဲ့ ABI/runtime mismatch၊ မရှိတဲ့ RKNN/RGA/MPP library၊ board driver သို့မဟုတ် offline deployment လိုအပ်ချက်တွေကို ဖြေရှင်းမပေးနိုင်ပါ။ IDE နဲ့ build အောင်မြင်တာတစ်ခုတည်းက board ပေါ်မှာ run မယ်လို့ အာမမခံပါ။</span></p>
+
+References:
+- `./01_Rock5B_Debian/README/07_SDK_ENV_Setup_Question_Answer.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`

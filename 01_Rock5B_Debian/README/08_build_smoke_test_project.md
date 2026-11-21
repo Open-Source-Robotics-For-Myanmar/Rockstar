@@ -1,8 +1,8 @@
-# ROCK 5B / RK3588 — Smoke-test project build နှင့် deploy
+# $\color{#00c853}{\text{ROCK 5B / RK3588 — Smoke-test project build နှင့် deploy}}$
 
 ဤလမ်းညွှန်သည် [07 SDK environment setup](07_create_RK3588_SDK_env_on_ubuntu2204.md) ပြီးစီးပြီးနောက် CPU-only C++ sample နှင့် optional RKNN runtime probe ကို build၊ package၊ board ပေါ်စမ်းသပ်ရန်ဖြစ်သည်။ Host Ubuntu 22.04 မှ ARM64 binary ထုတ်ပြီး target board ၏ app-specific directory ဖြစ်သော `/opt/rockstar/rk3588-sdk-tests/<DEPLOY_TAG>/` ထဲ deploy လုပ်မည်။ `/opt` ထဲရှိ အခြားအရာများကို မထိပါ။
 
-## ၁။ SDK environment ကို activate လုပ်ပါ
+## $\color{red}{\text{၁။ SDK environment ကို activate လုပ်ပါ}}$
 
 Host ပေါ်ရှိ terminal အသစ်တွင် path/SSH target ကို မိမိစက်အတွက်ပြင်ပြီး SDK ကို activate လုပ်ပါ။
 
@@ -17,7 +17,7 @@ export ROCK5B_TARGET=mr_robot@192.168.1.15
 
 SDK directory ကို build configure လုပ်ပြီးနောက် rename/move လုပ်ထားပါက CMake cache ထဲတွင် ယခင် absolute path များ ကျန်နိုင်သည်။ အဲဒီအခါ stale build directory ကို ဆက်မသုံးဘဲ ဥပမာ `"$RK3588_SDK/build/cpu-renamed"` လို build directory အသစ်ဖြင့် CMake ကို ပြန် configure လုပ်ပါ။
 
-## ၂။ CPU-only sample နှင့် optional RKNN probe ဖန်တီးပါ
+## $\color{red}{\text{၂။ CPU-only sample နှင့် optional RKNN probe ဖန်တီးပါ}}$
 
 ```bash
 mkdir -p "$RK3588_SDK/src/smoke"
@@ -86,7 +86,7 @@ endif()
 CMAKE
 ```
 
-## ၃။ CPU-only target ကို build လုပ်ပြီးစစ်ပါ
+## $\color{red}{\text{၃။ CPU-only target ကို build လုပ်ပြီးစစ်ပါ}}$
 
 ```bash
 cmake -S "$RK3588_SDK/src/smoke" -B "$RK3588_SDK/build/cpu" -G Ninja \
@@ -104,7 +104,7 @@ aarch64-linux-gnu-readelf -d "$RK3588_SDK/deploy/cpu/bin/hello_rk3588" \
 
 မျှော်မှန်းချက်မှာ AArch64 binary ဖြစ်ပြီး ARM64 target loader/runtime နှင့်ကိုက်ညီရမည်။ Host ပေါ်မှာ ARM64 binary ကို `ldd` ဖြင့်စစ်ခြင်း သို့မဟုတ် တိုက်ရိုက် run ခြင်း မလုပ်ပါနှင့်။
 
-## ၄။ Optional RKNN probe ကို build လုပ်ပါ
+## $\color{red}{\text{၄။ Optional RKNN probe ကို build လုပ်ပါ}}$
 
 NPU စမ်းသပ်မှသာ 07 လမ်းညွှန်၏ RKNN SDK အဆင့်ကို အရင်လုပ်ပါ။ `prefix/include/rknn_api.h` နှင့် `prefix/lib/librknnrt.so` မရှိပါက probe build မအောင်မြင်ပါ။
 
@@ -124,7 +124,7 @@ aarch64-linux-gnu-readelf --version-info "$RK3588_SDK/deploy/npu/bin/rknn_probe"
 
 Expected: AArch64 binary, `librknnrt.so` dependency နှင့် `$ORIGIN/../lib` RUNPATH။ RKNN runtime ၏ SONAME က `librknnrt.so` အမည်နှင့်မတူပါက လိုအပ်သော SONAME symlink ကို deploy `lib/` ထဲပါ ထည့်ပါ။
 
-## ၅။ Board သို့ package ကူးပြီး `/opt` ထဲ deploy လုပ်ပါ
+## $\color{red}{\text{၅။ Board သို့ package ကူးပြီး /opt ထဲ deploy လုပ်ပါ}}$
 
 CPU-only စမ်းရန် `DEPLOY_KIND=cpu` ထားပါ။ RKNN build/install အောင်မြင်မှသာ `DEPLOY_KIND=npu` ပြောင်းပါ။ Build output ကို board user home ရှိ staging directory သို့ SCP လုပ်ပြီး `/opt/rockstar/rk3588-sdk-tests/<DEPLOY_TAG>/` ထဲသီးသန့် extract လုပ်မည်။ Deploy path ရှိပြီးသားဖြစ်ပါက အသစ်သော tag သုံးပါ၊ အဟောင်းကို ထပ်မရေးပါနှင့်။
 
@@ -180,7 +180,7 @@ ldd ./lib/librknnrt.so
 
 Argument မပါသော probe သည် runtime/dependency load ဖြစ်ခြင်းကိုသာ စစ်ပြီး NPU inference အလုပ်လုပ်ကြောင်း မအတည်ပြုပါ။
 
-## ၆။ Optional model-conversion နှင့် NPU initialization စမ်းသပ်မှု
+## $\color{red}{\text{၆။ Optional model-conversion နှင့် NPU initialization စမ်းသပ်မှု}}$
 
 RKNN model convert လုပ်မည်ဆိုရင် 07 လမ်းညွှန်တွင်ပြင်ထားသော host venv (`$RK3588_SDK/venv-rknn`) ကိုသုံးပါ။ Model conversion သည် model-specific ဖြစ်သောကြောင့် input shape/name, channel order, normalization, quantization dataset ကို မိမိ model အလိုက် သတ်မှတ်ပါ။ Converter တွင် `target_platform='rk3588'` သတ်မှတ်ပါ။
 
@@ -205,7 +205,7 @@ cd "/opt/rockstar/rk3588-sdk-tests/$DEPLOY_TAG"
 
 Model initialization/version query အောင်မြင်ခြင်းသည် inference/accuracy စမ်းသပ်ပြီးဖြစ်သည်ဟု မဆိုလိုပါ။ Actual inference နှင့် output validation အတွက် model preprocessing, `rknn_run` နှင့် result checking ကို app ထဲထည့်ပြီး board ပေါ်တွင် စမ်းရပါမည်။ Board ၏ NPU driver, device access နှင့် runtime version ကိုလည်း လိုက်ဖက်ကြောင်း အတည်ပြုပါ။
 
-## ၇။ Smoke test ပြဿနာဖြေရှင်းရန်
+## $\color{red}{\text{၇။ Smoke test ပြဿနာဖြေရှင်းရန်}}$
 
 - `GLIBC_*` / `GLIBCXX_* not found` — binary/library လိုအပ်သော symbol version နှင့် board OS runtime မကိုက်ပါ။ Board `glibc` ကို အစားထိုးမတင်ဘဲ compatible sysroot/toolchain ဖြင့် rebuild လုပ်ပါ။
 - `librknnrt.so not found` — deploy `lib/`, SONAME, binary RUNPATH ကိုစစ်ပါ။
@@ -215,3 +215,8 @@ Model initialization/version query အောင်မြင်ခြင်းသ
 - `ssh` connection closed — build failure နှင့်မတူပါ။ Board IP/network/SSH service ကိုစစ်ပြီး connection အောင်မြင်ပြီးမှ SCP/deploy ကိုပြန်လုပ်ပါ။
 
 SDK setup လမ်းညွှန်တွင် board kernel/driver ပြောင်းလဲမှု မပါဝင်ပါ။ Hardware driver သို့မဟုတ် firmware မရှိလျှင် smoke project ကို package လုပ်ခြင်းတစ်ခုတည်းဖြင့် ဖြေရှင်း၍မရပါ။
+
+References:
+- `./01_Rock5B_Debian/README/08_build_smoke_test_project.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`

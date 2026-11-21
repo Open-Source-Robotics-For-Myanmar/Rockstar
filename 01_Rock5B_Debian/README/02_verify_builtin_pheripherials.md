@@ -1,4 +1,4 @@
-# SDK မတင်မီ ROCK 5B hardware စစ်ရန်
+# $\color{#00c853}{\text{SDK မတင်မီ ROCK 5B hardware စစ်ရန်}}$
 
 **Commands ကို ROCK 5B ပေါ်တွင် အပိုင်းလိုက် run ပါ။** Device/IP/path နမူနာများကို မိမိစက်အတိုင်းပြင်ပါ။ Device တွေ့ရုံနှင့် အလုပ်လုပ်သည်ဟု မသတ်မှတ်ပါနှင့်။
 
@@ -11,7 +11,7 @@
 
 လိုအပ်သော hardware အားလုံး **PASS** ဖြစ်မှ deploy ပါ။ Driver မရှိခြင်းက hardware ပျက်ကြောင်း မဆိုလိုပါ။ [ROCK 5B specs](https://radxa.com/products/rock5/5b/#documentation) · [Pinout](https://docs.radxa.com/en/rock5/rock5b/hardware-design/hardware-interface)
 
-## ၁။ ပြင်ဆင်ခြင်း
+## $\color{red}{\text{၁။ ပြင်ဆင်ခြင်း}}$
 
 - [ ] Board/RAM/OS/PSU နှင့် တပ်ထားသော accessories ကိုမှတ်ပါ။
 - [ ] Heatsink/fan တပ်ပါ။ Module/ribbon cable ချိတ်မီ power ပိတ်ပါ။
@@ -38,7 +38,7 @@ sudo journalctl -k -b --no-pager
 
 **PASS:** ROCK 5B/RK3588၊ aarch64၊ CPU ၈ core၊ တပ်ထားသော RAM နှင့်ကိုက်သည်။ Reserved memory ကြောင့် RAM အနည်းငယ်လျော့ပြခြင်း ပုံမှန်ဖြစ်သည်။ Package မရလျှင် အခြား packages ကို သီးခြားတင်ပါ။
 
-## ၂။ CPU / RAM / အပူ / power / fan
+## $\color{red}{\text{၂။ CPU / RAM / အပူ / power / fan}}$
 
 ```bash
 for z in /sys/class/thermal/thermal_zone*; do
@@ -56,7 +56,7 @@ watch -n 2 'grep -H . /sys/class/thermal/thermal_zone*/temp'
 
 **PASS:** Error/reboot/hang မရှိ၊ အပူတည်ငြိမ်၊ fan လည်သည်။ Sysfs အပူကို ၁၀၀၀ ဖြင့်စားလျှင် °C ရသည်။ Critical trip အနီးရောက်လျှင် test ရပ်ပါ။ `memtester` က သတ်မှတ်ထားသော 256 MiB ကိုသာစစ်သည်။ PSU ကောင်းမကောင်းကို command တစ်ခုတည်းဖြင့် မသိနိုင်ပါ။
 
-## ၃။ microSD / eMMC / NVMe / SPI flash
+## $\color{red}{\text{၃။ microSD / eMMC / NVMe / SPI flash}}$
 
 ```bash
 lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS,MODEL
@@ -91,7 +91,7 @@ rm -- "$TEST_FILE"
 
 **PASS:** Data verification အောင်၊ I/O/media error မရှိ၊ NVMe critical warning မရှိ။ Direct I/O မရလျှင် မှတ်တမ်းတင်ပြီး `--direct=0` ဖြင့်ပြန်စမ်းပါ။ SPI ကို erase/flash မလုပ်ပါနှင့်။ လိုအပ်သည့် boot media တစ်ခုစီမှ boot စမ်းပါ။
 
-## ၄။ Ethernet / Wi-Fi / Bluetooth / PoE
+## $\color{red}{\text{၄။ Ethernet / Wi-Fi / Bluetooth / PoE}}$
 
 ```bash
 ip -br address
@@ -126,7 +126,7 @@ bluetoothctl --timeout 20 scan on
 
 **PASS:** Wi-Fi မှ data ပို့နိုင်၊ Bluetooth device ကို pair/connect လုပ်ပြီး တကယ်သုံးနိုင်ရမည်။ Scan ရရုံ မလုံလောက်ပါ။ PoE HAT ရှိလျှင် PoE source ဖြင့် boot/load စမ်းပါ။
 
-## ၅။ USB / GPU / display
+## $\color{red}{\text{၅။ USB / GPU / display}}$
 
 ```bash
 lsusb
@@ -151,9 +151,9 @@ vulkaninfo --summary # Vulkan လိုအပ်မှ။
 
 **PASS:** Hardware Mali renderer သုံးပြီး ပုံရိပ်တည်ငြိမ်သည်။ `llvmpipe/softpipe/lavapipe` က software rendering ဖြစ်သည်။ SSH မှ display မရှိဘဲ run မရခြင်းကို GPU ပျက်ဟု မသတ်မှတ်ပါနှင့်။ [Interface လမ်းညွှန်](https://docs.radxa.com/en/rock5/rock5b/getting-started/interface-usage)
 
-## ၆။ NPU — AI deployment အတွက် မဖြစ်မနေ
+## $\color{red}{\text{၆။ NPU — AI deployment အတွက် မဖြစ်မနေ}}$
 
-### Driver စစ်ရန်
+### $\color{cyan}{\text{Driver စစ်ရန်}}$
 
 ```bash
 sudo journalctl -k -b | grep -Ei 'rknpu|npu|iommu'
@@ -166,7 +166,7 @@ sudo cat /sys/kernel/debug/rknpu/load
 
 Debugfs/device node အမည်က kernel အလိုက် ကွာနိုင်သည်။ **Driver တွေ့ရုံနှင့် PASS မဟုတ်ပါ။** Compatible RKNN runtime မရှိသေးလျှင် inference test ကို BLOCKED မှတ်ပါ။
 
-### Diagnostic runtime နှင့် model စမ်းရန်
+### $\color{cyan}{\text{Diagnostic runtime နှင့် model စမ်းရန်}}$
 
 [Official RKNN repository](https://github.com/airockchip/rknn-toolkit2) မှ **driver နှင့်ကိုက်ညီသော release** ကိုရွေးပါ။ Wheel က board ၏ Python ABI + **aarch64** နှင့်ကိုက်ရမည်။ x86_64 wheel မသုံးပါနှင့်။
 
@@ -191,7 +191,7 @@ python test.py
 
 **PASS:** Model load/init/inference အောင်ပြီး supplied shuttle ပုံအတွက် space shuttle classification ထွက်ရမည်။ Version/permission error ဖြစ်လျှင် ပြင်ပြီးပြန်စမ်းပါ။ Wheel မကိုက်လျှင် supported Python environment သုံးပါ။
 
-### NPU core ၃ ခုစလုံး စစ်ရန်
+### $\color{cyan}{\text{NPU core ၃ ခုစလုံး စစ်ရန်}}$
 
 အပေါ်က example directory နှင့် activated environment ထဲမှ run ပါ။
 
@@ -227,7 +227,7 @@ sudo journalctl -k -b | grep -Ei 'rknpu|iommu|fault|timeout'
 
 **PASS:** Core တစ်ခုစီ inference ၃၀ ကြိမ်အောင်၊ top class တူ၊ NPU/IOMMU fault မရှိ။ Inference ပြီးချိန် load `0` ပြခြင်း ပုံမှန်ဖြစ်သည်။ [မူရင်း example](https://github.com/airockchip/rknn-toolkit2/blob/master/rknn-toolkit-lite2/examples/resnet18/test.py)
 
-## ၇။ Camera / HDMI input / VPU / RGA
+## $\color{red}{\text{၇။ Camera / HDMI input / VPU / RGA}}$
 
 ```bash
 v4l2-ctl --list-devices
@@ -252,7 +252,7 @@ ffmpeg -hide_banner -loglevel verbose -c:v h264_rkmpp \
 
 Device/codec စာရင်းပေါ်ရုံ မလုံလောက်ပါ။ Stock FFmpeg မှာ accelerator မပါလျှင် matching diagnostic tools မရမချင်း BLOCKED မှတ်ပါ။
 
-## ၈။ Audio
+## $\color{red}{\text{၈။ Audio}}$
 
 ```bash
 aplay -l
@@ -268,7 +268,7 @@ aplay -D "$PLAYBACK" "$HOME/rock5b-verification/mic.wav"
 
 **PASS:** ဘယ်/ညာ အသံမှန်၊ microphone recording ကြည်လင်သည်။ Card/format/channel ကို မိမိ device အတိုင်းပြင်ပါ။ လိုအပ်သည့် analog/HDMI/DP/USB audio တစ်ခုစီစမ်းပါ။
 
-## ၉။ GPIO / I2C / SPI / UART / PWM / ADC
+## $\color{red}{\text{၉။ GPIO / I2C / SPI / UART / PWM / ADC}}$
 
 ```bash
 gpiodetect
@@ -306,7 +306,7 @@ rm -- "$CAPTURE_FILE"
 
 **PASS:** ပို့သောစာသားအတိုင်းရသည်။ Test ပြီးလျှင် loopback ကြိုးဖြုတ်ပါ။
 
-## ၁၀။ RTC / LED / buttons / ပြန်တက်ခြင်း
+## $\color{red}{\text{၁၀။ RTC / LED / buttons / ပြန်တက်ခြင်း}}$
 
 ```bash
 ls -l /dev/rtc*
@@ -325,7 +325,7 @@ cat /proc/bus/input/devices
 - [ ] `sudo poweroff` ပြီး power ဖြုတ်/ပြန်တပ်လျှင် boot ရသည်။
 - [ ] CPU/NPU/camera/network ကို အတူတူသုံးပြီး power/အပူ တည်ငြိမ်သည်။
 
-## ၁၁။ နောက်ဆုံးရလဒ်
+## $\color{red}{\text{၁၁။ နောက်ဆုံးရလဒ်}}$
 
 Reboot မလုပ်မီ logs သိမ်းပါ။
 
@@ -352,3 +352,9 @@ exit # Transcript ပိတ်ရန်။
 | RTC / LED / buttons / reboot / combined load | |
 
 **Deploy ခွင့်:** လိုအပ်သည့် feature အားလုံး PASS၊ မရှင်းရသေးသော crash/I/O/accelerator error မရှိ၊ driver/runtime versions မှတ်တမ်းရှိရမည်။ ဤစာတမ်းရှိခြင်းက board စမ်းပြီးပြီဟု မဆိုလိုပါ။
+
+References:
+- `./01_Rock5B_Debian/README/02_verify_builtin_pheripherials.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`
+

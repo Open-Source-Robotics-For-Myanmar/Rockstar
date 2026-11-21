@@ -1,0 +1,1 @@
+- AGENTS_for_markdown.md ကိုလိုက်နာပါ။

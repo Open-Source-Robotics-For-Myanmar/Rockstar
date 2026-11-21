@@ -1,22 +1,22 @@
-# ROCK 5B Cross-Compile SDK — မေးခွန်းနှင့်အဖြေများ
+# $\color{#00c853}{\text{ROCK 5B Cross-Compile SDK — မေးခွန်းနှင့်အဖြေများ}}$
 
 ဤစာတမ်းတွင် ROCK 5B hardware စစ်ဆေးမှု၊ `03_check_base_dependencies.sh` ရလဒ်နှင့် cross-compile SDK/sysroot ဆိုင်ရာ မေးခွန်းများကို စုစည်းထားသည်။
 
 > **မှတ်ချက်:** အရောင်မပြသော Markdown renderer များတွင်လည်း မေးခွန်း/အဖြေကို စာသားအညွှန်းဖြင့် ခွဲသိနိုင်သည်။
 
-## ၁။ NPU နှင့် USB Webcam စစ်ဆေးမှု
+## $\color{red}{\text{၁။ NPU နှင့် USB Webcam စစ်ဆေးမှု}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> `02_check_hardwares.sh` ရလဒ်နဲ့ ကိုယ်တိုင်စစ်ထားတဲ့ NPU၊ USB Webcam အခြေအနေက ဘယ်လိုလဲ။</span></p>
 
 <p><span style="color: blue"><strong>အဖြေ:</strong> Script က hardware inventory ကို စုဆောင်းတာဖြစ်ပြီး functional PASS အဖြစ် မသတ်မှတ်ပါ။ Manual output မှာ RKNPU driver က DRM အဖြစ် initialize ဖြစ်ပြီး debugfs load မှာ Core0 42% ပြခဲ့ပါတယ်။ `can't request region` နဲ့ `failed to initialize power model` စာများကိုလည်း တွေ့ရတဲ့အတွက် NPU inference ကို compatible RKNN demo နဲ့ စမ်းပြီး၊ inference အောင်မြင်မှုနဲ့ kernel error များကို ထပ်စစ်သင့်ပါတယ်။ USB Webcam အတွက် `/dev/video1`, `/dev/video2` နဲ့ `/dev/media0` ကို တွေ့ရှိပြီး device enumeration အဆင်ပြေပါတယ်။ ဒါပေမဲ့ video capture/stream ကို အဲဒီ output တစ်ခုတည်းနဲ့ အတည်မပြုနိုင်သေးပါ။</span></p>
 
-## ၂။ Hardware စစ်ဆေးမှု script ပြင်ဆင်ခြင်း
+## $\color{red}{\text{၂။ Hardware စစ်ဆေးမှု script ပြင်ဆင်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> ဒီ NPU နဲ့ USB Cam manual စစ်ဆေးမှုတွေကို `02_check_hardwares.sh` ထဲ ထည့်မွမ်းမံပေးနိုင်မလား။</span></p>
 
 <p><span style="color: blue"><strong>အဖြေ:</strong> Script ကို ပြင်ဆင်ထားပါတယ်။ Camera စစ်ဆေးမှုမှာ `v4l2-ctl` မရှိလျှင်လည်း `/dev/video*`, sysfs device name/path နဲ့ `/dev/media*` ကို စာရင်းပြုစုပါတယ်။ NPU စစ်ဆေးမှုမှာ debugfs `version/load`, devfreq အချက်အလက်နဲ့ RKNPU ဆိုင်ရာ kernel messages ကို ဖတ်ဖို့ကြိုးစားပါတယ်။ လက်ရှိ user အခွင့်အရေးမလုံလောက်လျှင် password မတောင်းတဲ့ `sudo -n` ကိုသာ စမ်းပြီး၊ မရပါက ဘာကြောင့် မဖတ်နိုင်ကြောင်း log ထဲမှာ ပြပါတယ်။ Script သည် debugfs ကို mount မလုပ်သလို NPU inference သို့မဟုတ် camera capture ကို အလိုအလျောက် မစမ်းပါ။ Bash syntax နဲ့ regression test အောင်မြင်ခဲ့ပြီး board ပေါ်မှာ ပြန် run စမ်းသပ်ထားခြင်းတော့ မဟုတ်ပါ။</span></p>
 
-## ၃။ Base dependency inventory နှင့် SDK အတွက် လိုအပ်ချက်များ
+## $\color{red}{\text{၃။ Base dependency inventory နှင့် SDK အတွက် လိုအပ်ချက်များ}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> `03_check_base_dependencies.sh` ရလဒ်ကို ကြည့်ပြီး ဒီ board အတွက် cross-compile SDK ထုတ်ဖို့ ဘာတွေလိုသေးလဲ။</span></p>
 
@@ -24,7 +24,7 @@
 
 <p><span style="color: blue"><strong>ဆက်လက်လိုအပ်သည်များ:</strong> (၁) target ABI နဲ့ကိုက်ညီတဲ့ sysroot (၂) board ၏ glibc version နှင့်တူသော `libc6-dev:arm64` နှင့် လိုအပ်သည့် အခြား target development packages (၃) host ပေါ်ရှိ AArch64 cross-toolchain (၄) app သုံးမည့် vendor libraries/headers (ဥပမာ RKNN, RGA, MPP) တို့ဖြစ်ပါတယ်။ NPU driver `v0.9.8` နဲ့ RKNPU debugfs ကို inventory မှာ တွေ့ရပေမဲ့ သုံးမည့် RKNN user-space runtime, headers နဲ့ model/toolkit version ကို လိုက်ဖက်မှုစစ်ရန်လိုပါတယ်။ `linux-libc-dev` သည် userspace kernel API headers ဖြစ်ပြီး kernel module build headers မဟုတ်ပါ။ Kernel module တည်ဆောက်မှသာ လက်ရှိ vendor kernel နဲ့ကိုက်ညီတဲ့ kernel source/build headers ကို သီးခြားရယူပါ။</span></p>
 
-## ၄။ Sysroot archive မပါဘဲ cross-compile လုပ်ခြင်း
+## $\color{red}{\text{၄။ Sysroot archive မပါဘဲ cross-compile လုပ်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Sysroot archive မယူဘဲနဲ့ cross-compile လုပ်လို့ရသလား။</span></p>
 
@@ -32,13 +32,13 @@
 
 <p><span style="color: blue"><strong>အစားထိုးနည်း:</strong> Host ပေါ်တွင် board ၏ distro/release နှင့် version ကိုက်ညီသော ARM64 development packages များကို သီးခြား sysroot ထဲ download/unpack လုပ်နိုင်ပါတယ်။ Simple C/C++ app အတွက် minimal sysroot နဲ့စလို့ရပေမဲ့ app လိုအပ်သည့် vendor headers/libraries ကို သီးခြားဖြည့်ရပါမယ်။ လက်ရှိ board အတွက် `libc6-dev:arm64` ကို target `libc6` version အတိအကျနှင့်ကိုက်အောင်ရွေးပါ။</span></p>
 
-## ၅။ Archive မယူခြင်း၏ အန္တရာယ်များ
+## $\color{red}{\text{၅။ Archive မယူခြင်း၏ အန္တရာယ်များ}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Sysroot archive မယူရင် ဘာတွေဖြစ်လာနိုင်လဲ။</span></p>
 
 <p><span style="color: blue"><strong>အဖြေ:</strong> Archive မရှိတာကိုယ်တိုင်က ပြဿနာမဟုတ်ပါ။ အစားထိုး sysroot မပြင်ဆင်ထားခြင်းက ပြဿနာဖြစ်နိုင်ပါတယ်။ Header/library မတွေ့လို့ build မအောင်နိုင်ခြင်း၊ host ၏ x86_64 library ကို မှားသုံးမိလို့ target ပေါ်မ run နိုင်ခြင်း၊ glibc/libstdc++ ABI မကိုက်လို့ `GLIBC_*` သို့မဟုတ် `GLIBCXX_* not found` ဖြစ်ခြင်းနှင့် RKNN/RGA/MPP လို vendor dependency မပါလို့ build သို့မဟုတ် runtime မှာ feature မအောင်မြင်ခြင်းတို့ ဖြစ်နိုင်ပါတယ်။ `dlopen()` plugin များကို compile/link အဆင့်က မဖမ်းမိနိုင်သောကြောင့် အသုံးပြုမည့် feature တစ်ခုချင်းစီကို board ပေါ်မှာ စမ်းသပ်ပါ။</span></p>
 
-## ၆။ Yocto/Buildroot နှင့် အခြားသူများအသုံးပြုသည့်နည်းလမ်း
+## $\color{red}{\text{၆။ Yocto/Buildroot နှင့် အခြားသူများအသုံးပြုသည့်နည်းလမ်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> ပုံမှန်အားဖြင့် အစားထိုး sysroot ကို Yocto, Buildroot တို့ကနေ တည်ဆောက်ကြတာလား။ တခြားသူတွေ ဘယ်လိုလုပ်ကြသလဲ။</span></p>
 
@@ -48,7 +48,7 @@
 
 <p><span style="color: blue"><strong>ဒီ ROCK 5B အတွက်:</strong> လက်ရှိ Armbian/Ubuntu 26.04 image ကို ဆက်သုံးမယ်ဆိုရင် Yocto/Buildroot နဲ့ image ကို ပြန်တည်ဆောက်ရန်မလိုဘဲ package-based sysroot ကို host ပေါ်မှာ ပြင်ဆင်တာက သဘာဝကျပါတယ်။ Vendor runtime ကို Ubuntu repository မှာ မရနိုင်လျှင် board/app နဲ့ကိုက်ညီပြီး အသုံးပြုခွင့်သတ်မှတ်ချက်များကို လိုက်နာနိုင်သော vendor/upstream ရင်းမြစ်မှ သီးခြားရယူပါ။ Yocto သို့မဟုတ် Buildroot သို့ ပြောင်းသုံးခြင်းက board OS ကို အဲဒီ build system နဲ့ ကိုယ်တိုင်တည်ဆောက်မယ့်အခါ ပိုသင့်တော်ပါတယ်။</span></p>
 
-## ၇။ Sysroot archive ထဲတွင် ပါဝင်မည့်အရာများ
+## $\color{red}{\text{၇။ Sysroot archive ထဲတွင် ပါဝင်မည့်အရာများ}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Sysroot archive ယူလိုက်ရင် အထဲမှာ ဘာတွေပါလာမလဲ။</span></p>
 
@@ -58,7 +58,7 @@
 
 <p><span style="color: blue"><strong>အကြံပြုချက်:</strong> Archive ရလာလျှင် `tar -tf` နဲ့ အတွင်းဖိုင်စာရင်းကိုကြည့်ပြီး sysroot ထဲ extract လုပ်ပါ။ ထို့နောက် board နဲ့ကိုက်ညီတဲ့ `-dev` packages နဲ့ app သုံးမယ့် vendor headers/libraries ကို ဖြည့်ပါ။ ဒီနည်းက runtime libraries ရဲ့ symlinks နဲ့ ABI ကို board မှတိုက်ရိုက်ရနိုင်ပေမဲ့ archive တစ်ခုတည်းကို complete SDK လို့ မယူဆသင့်ပါ။</span></p>
 
-## ၈။ `libc6-dev` ထည့်ခြင်းဖြင့် Sysroot ပိုပြည့်စုံလာမလား
+## $\color{red}{\text{၈။ libc6-dev ထည့်ခြင်းဖြင့် Sysroot ပိုပြည့်စုံလာမလား}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> `libc6-dev` ကို apt နဲ့ ထည့်လိုက်ရင် sysroot မှာ ဘာတွေ ထပ်ရလာနိုင်လဲ၊ ပိုပြည့်စုံသွားနိုင်မလား။</span></p>
 
@@ -68,7 +68,7 @@
 
 <p><span style="color: blue"><strong>ဒီ board အတွက်:</strong> Board ရဲ့ `libc6` version က `2.43-2ubuntu2.3` ဖြစ်တဲ့အတွက် အဲဒီ version နဲ့တိတိကျကျကိုက်ညီတဲ့ `libc6-dev:arm64` ကို host ပေါ်ရှိ သီးခြား sysroot ထဲ download/unpack လုပ်တာက ပိုသင့်တော်ပါတယ်။ Board ပေါ်မှာ `apt install` လုပ်ရင် board ကိုယ်တိုင်ပြောင်းလဲသွားမယ်။ Board ကို မပြောင်းလဲဘဲထားလိုပါက package ကို host ပေါ်တွင် download လုပ်ပြီး sysroot ထဲမှာ unpack လုပ်ပါ။ ထည့်ပြီးနောက် cross-build လုပ်ကာ board ပေါ်မှာ စမ်းသပ်အတည်ပြုပါ။</span></p>
 
-## ၉။ `libc6-dev` ကို Board သို့မဟုတ် Host မှာ ထည့်သင့်သလား
+## $\color{red}{\text{၉။ libc6-dev ကို Board သို့မဟုတ် Host မှာ ထည့်သင့်သလား}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Board ကို development/compilation အတွက်မသုံးဘဲ runtime libraries အတွက်သာသုံးမယ်ဆိုရင် `libc6-dev` ကို board ပေါ်တင်တာက မလိုအပ်ဘဲ storage ယူမလား။ amd64 host ပေါ်မှာ SDK/sysroot ဆောက်ပြီး cross-compile လုပ်တာ ပိုကောင်းသလား။</span></p>
 
@@ -78,7 +78,7 @@
 
 <p><span style="color: blue"><strong>ဒီ board အတွက်:</strong> target `libc6` version သည် `2.43-2ubuntu2.3` ဖြစ်သောကြောင့် ထို version နှင့်ကိုက်ညီသည့် ARM64 development package ကို sysroot ထဲထည့်ပါ။ Build ပြီးနောက် binary ကို board ပေါ်စမ်းပြီး လိုအပ်သော runtime library နဲ့ ABI များကိုက်ညီကြောင်း စစ်ဆေးပါ။</span></p>
 
-## ၁၀။ Inventory အချက်အလက်များဖြင့် Archive မပါဘဲ SDK ဆောက်ခြင်း
+## $\color{red}{\text{၁၀။ Inventory အချက်အလက်များဖြင့် Archive မပါဘဲ SDK ဆောက်ခြင်း}}$
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> Sysroot archive မယူဘဲ `03_check_base_dependencies.sh` မှရတဲ့ version အသေးစိတ်ကိုသာ အခြေခံပြီး ကိုယ်တိုင် SDK ဆောက်လို့ရသလား။</span></p>
 
@@ -88,9 +88,14 @@
 
 <p><span style="color: blue"><strong>အတည်ပြုရန်:</strong> Cross-compile ပြီး binary ရဲ့ ARM64 architecture နဲ့ လိုအပ်တဲ့ GLIBC/GLIBCXX ABI များကိုစစ်ပါ။ ထို့နောက် board ပေါ်မှာ တကယ် run စမ်းပြီး dynamic/plugin dependencies အပါအဝင် app လိုအပ်တဲ့ feature များ အလုပ်လုပ်ကြောင်း အတည်ပြုပါ။</span></p>
 
-## ဆက်စပ်လမ်းညွှန်များ
+## $\color{red}{\text{ဆက်စပ်လမ်းညွှန်များ}}$
 
 - [၀၃ — Base OS အချက်အလက် စစ်ခြင်း](03_check_base_dependencies.md)
 - [၀၄ — Sysroot archive သုံးပြီး SDK ပြင်ဆင်ခြင်း](04_create_cross_compiler_using_sysroot_archive.md)
 - [၀၅ — Sysroot archive မပါဘဲ SDK ပြင်ဆင်ခြင်း](05_create_cross_compiler_without_sysroot_archive.md)
 - [၀၆ — Sample C++ ကို SCP ဖြင့် deploy](06_deploy_sample_cpp.md)
+
+References:
+- `./01_Rock5B_Debian/README/04_QuestionAnswer.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`

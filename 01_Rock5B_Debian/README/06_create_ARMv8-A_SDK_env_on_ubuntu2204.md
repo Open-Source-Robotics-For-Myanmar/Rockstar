@@ -1,4 +1,4 @@
-# Ubuntu 22.04 host ပေါ်တွင် generic Linux ARM64 SDK တည်ဆောက်ခြင်း
+# $\color{#00c853}{\text{Ubuntu 22.04 host ပေါ်တွင် generic Linux ARM64 SDK တည်ဆောက်ခြင်း}}$
 
 ဤလမ်းညွှန်ကို **Ubuntu 22.04 amd64/x86_64 host** ပေါ်တွင် အစဉ်လိုက်လုပ်နိုင်သည်။ Physical board၊ SSH၊ board sysroot archive၊ vendor SDK မလိုပါ။ Ubuntu မှပေးထားသော cross-toolchain packages ကိုသုံးပြီး C/C++ program တည်ဆောက်မည်။ Compiler ကို source မှ bootstrap လုပ်သည့်နည်း မဟုတ်ပါ။
 
@@ -13,7 +13,7 @@
 
 **Board-independent ဖြစ်သော်လည်း OS/ABI-independent မဟုတ်ပါ။** Android/Bionic၊ Alpine/musl၊ bare-metal firmware၊ kernel modules အတွက် ဤ SDK မဟုတ်ပါ။ Deployment လုပ်ချိန် target တွင် compatible loader၊ glibc၊ libstdc++ နှင့် application dependencies လိုသည်။ ARM64 CPU တူရုံဖြင့် မလုံလောက်ပါ။
 
-## ၁။ Host စစ်ပြီး packages တင်ပါ
+## $\color{red}{\text{၁။ Host စစ်ပြီး packages တင်ပါ}}$
 
 အောက်ပါ commands များကို Bash terminal တစ်ခုတည်းတွင် အစဉ်လိုက်လုပ်ပါ။ Error တက်လျှင် နောက်အဆင့်မဆက်ဘဲ အရင်ဖြေရှင်းပါ။ Build ကို normal user ဖြင့်လုပ်ပြီး `sudo` ကို package installation မှာပဲ သုံးပါ။
 
@@ -56,7 +56,7 @@ printf '' | aarch64-linux-gnu-g++ -E -x c++ -v - >/dev/null
 aarch64-linux-gnu-g++ -print-search-dirs
 ```
 
-## ၂။ SDK workspace နှင့် activation file ဖန်တီးပါ
+## $\color{red}{\text{၂။ SDK workspace နှင့် activation file ဖန်တီးပါ}}$
 
 အောက်ပါဖိုင်များကို `$HOME/arm64-sdk-jammy` အောက်တွင် ဖန်တီးမည်။ ရှိပြီးသား workspace ထဲက အမည်တူ configuration/sample files များကို ထပ်ရေးမည်ဖြစ်၍ ကိုယ်ပိုင်ဖိုင်ရှိလျှင် path အသစ်ရွေးပါ။ Path တွင် space မပါသောနေရာကိုသုံးပါ။
 
@@ -102,7 +102,7 @@ source "$ARM64_SDK/env.sh"
 
 Terminal အသစ်မှပြန်ဝင်သည့်အခါ `bash --noprofile --norc` လုပ်ပြီး `source "$HOME/arm64-sdk-jammy/env.sh"` ကိုသုံးပါ။ Workspace path ပြောင်းထားလျှင် အဲဒီ path ကိုသုံးပါ။
 
-## ၃။ CMake toolchain ဖန်တီးပါ
+## $\color{red}{\text{၃။ CMake toolchain ဖန်တီးပါ}}$
 
 ```bash
 cat > "$ARM64_SDK/toolchains/aarch64-linux-gnu.cmake" <<'CMAKE'
@@ -136,7 +136,7 @@ Build tools ကို host မှယူပြီး dependency ရှာရာ�
 
 `-march=armv8-a` သည် application code ၏ CPU instruction baseline ဖြစ်သည်။ `-march=native`၊ `-mcpu=cortex-a76` စသည့် host/board-specific tuning မလိုပါ။ [GCC AArch64 options](https://gcc.gnu.org/onlinedocs/gcc/AArch64-Options.html)
 
-## ၄။ C နှင့် C++ sample ကို cross-build လုပ်ပါ
+## $\color{red}{\text{၄။ C နှင့် C++ sample ကို cross-build လုပ်ပါ}}$
 
 ```bash
 cat > "$ARM64_SDK/src/hello/hello.c" <<'C'
@@ -175,7 +175,7 @@ cmake --build "$ARM64_SDK/build/hello" --parallel "$(nproc)" --verbose
 
 Compiler/toolchain ပြောင်းလျှင် build directory အသစ်ကိုသုံးပါ။ Native build cache နှင့် cross-build cache ကို မရောပါနှင့်။
 
-## ၅။ Binary architecture စစ်ပြီး board မပါဘဲ run ပါ
+## $\color{red}{\text{၅။ Binary architecture စစ်ပြီး board မပါဘဲ run ပါ}}$
 
 ```bash
 file "$ARM64_SDK/build/hello/hello_c" "$ARM64_SDK/build/hello/hello_cpp"
@@ -205,7 +205,7 @@ Hello ARM64 C++
 
 ARM64 binary ကို x86_64 host ပေါ် တိုက်ရိုက် `./hello_cpp` သို့မဟုတ် host `ldd` ဖြင့်မစမ်းဘဲ အထက်ပါ QEMU/readelf ကိုသုံးပါ။
 
-## ၆။ Environment မှတ်တမ်းသိမ်းပြီး နောက် project တွင်ပြန်သုံးပါ
+## $\color{red}{\text{၆။ Environment မှတ်တမ်းသိမ်းပြီး နောက် project တွင်ပြန်သုံးပါ}}$
 
 ```bash
 dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n' \
@@ -226,7 +226,7 @@ Metadata သည် version မှတ်တမ်းသာဖြစ်ပြီ�
 
 OpenSSL၊ OpenCV စသည့် third-party libraries ထပ်လိုလျှင် **ARM64 build + development headers** လိုသည်။ Host ၏ `libssl-dev` / `libopencv-dev` ကို install လုပ်ရုံနှင့် target dependency မဖြစ်ပါ။ အခြေခံ SDK ပြီးမှ target-compatible libraries ကို သီးသန့် prefix/sysroot ထဲတည်ဆောက်ပြီး CMake နှင့် pkg-config target paths ကို တွဲညှိရမည်။ ဤလမ်းညွှန်သည် standard C/C++ runtime အထိသာ ပြင်ဆင်ပေးသည်။
 
-## အမှားတွေ့လျှင်
+## $\color{red}{\text{အမှားတွေ့လျှင်}}$
 
 | Error | စစ်ဆေးရန် |
 | --- | --- |
@@ -238,3 +238,9 @@ OpenSSL၊ OpenCV စသည့် third-party libraries ထပ်လိုလျ
 | `GLIBC_*` / `GLIBCXX_* not found` | Target runtime က binary လိုအပ်ချက်မပြည့်ပါ။ သက်ဆိုင်ရာ target baseline အတွက် ပြန် build လုပ်ရန် သို့မဟုတ် compatible runtime လိုသည် |
 
 အဆင့် ၅ တွင် C နှင့် C++ output နှစ်ခုလုံး QEMU ပေါ်မှန်ကန်စွာထွက်လျှင် basic cross-compile/link/emulation environment အဆင်သင့်ဖြစ်သည်။ Physical ARM64 Linux စက်ပေါ် deployment compatibility ကိုတော့ နောက်တစ်ဆင့်အဖြစ် ထပ်စစ်ရမည်။
+
+References:
+- `./01_Rock5B_Debian/README/06_create_ARMv8-A_SDK_env_on_ubuntu2204.md`
+- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./md_lists.md`
+
