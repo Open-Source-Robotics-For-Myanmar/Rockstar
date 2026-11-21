@@ -1,0 +1,7 @@
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/hello_rk3588.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/edit_cache.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/rebuild_cache.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/list_install_components.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/install.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/install/local.dir
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/build/cpu/CMakeFiles/install/strip.dir

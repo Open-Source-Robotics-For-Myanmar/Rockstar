@@ -1,0 +1,1 @@
+/home/mr_robot/Desktop/Git/Rockstar/01_Rock5B_Debian/SDK_Ubuntu2204/deploy/cpu/bin/hello_rk3588

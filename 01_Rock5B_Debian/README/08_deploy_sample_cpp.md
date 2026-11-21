@@ -1,15 +1,15 @@
-# ၀၅ — Sample C++ ကို SCP ဖြင့် deploy
+# ၀၆ — ARM64 Sample C++ ကို target စက်သို့ deploy
 
-[၀၄ archive နည်း](04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [၀၅ archive မပါသောနည်း](05_create_cross_compiler_without_sysroot_archive.md) တစ်ခုဖြင့် SDK ပြင်ပြီးမှ run ပါ။ **Host မှ build၊ board မှ run** မည်။ Board တွင် apt မသုံးပါ။ နမူနာက executable + private shared library ကို စမ်းသည်။
+[Ubuntu 22.04 ARM64 SDK လမ်းညွှန်](06_create_sdk_env_ubuntu2204.md) ဖြင့် build ပြီးမှ run ပါ။ ဤ file သည် ROCK 5B အမည်မတိကျဘဲ ARM64 Linux target တစ်ခုကို စုပေါင်းရည်ရွယ်သည်။ `TARGET` ကို ကိုယ့် ARM64 machine ရဲ့ SSH user/IP ဖြင့်ပြင်ပါ။
 
 ## ၁။ Host မှ sample ဖန်တီးရန်
 
 ```bash
-export SDK="$HOME/rock5b-sdk"
-export TARGET=mr_robot@rock-5b
+export SDK="$HOME/arm64-sdk"
+export TARGET=mr_robot@arm64-target
 mkdir -p "$SDK/src/sample"
 cat > "$SDK/src/sample/greeting.cpp" <<'CPP'
-extern "C" const char* greeting() { return "Hello ROCK 5B"; }
+extern "C" const char* greeting() { return "Hello ARM64"; }
 CPP
 cat > "$SDK/src/sample/main.cpp" <<'CPP'
 #include <iostream>
@@ -83,7 +83,7 @@ ldd /opt/my_project/lib/libgreeting.so.1
 /opt/my_project/bin/hello
 ```
 
-**PASS:** `not found` / version error မရှိ၊ `libgreeting.so.1` က `/opt/my_project/lib/` မှ load ဖြစ်ပြီး `Hello ROCK 5B` ထွက်ရမည်။ App ကို root ဖြင့် run ရန်မလိုပါ။
+**PASS:** `not found` / version error မရှိ၊ `libgreeting.so.1` က `/opt/my_project/lib/` မှ load ဖြစ်ပြီး `Hello ARM64` ထွက်ရမည်။ App ကို root ဖြင့် run ရန်မလိုပါ။
 
 ## ကိုယ့် app အတွက် ထပ်လုပ်ရန်
 
