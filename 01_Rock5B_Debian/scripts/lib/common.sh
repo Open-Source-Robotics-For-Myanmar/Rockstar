@@ -44,7 +44,7 @@ connect_board() {
         echo 'Not an RK3588 / RK3588S board. Stopping.' >&2
         exit 1
     fi
-    local results_root="$SCRIPT_DIR/check_results"
+    local results_root="$SCRIPT_DIR/../data/check_results_to_build_sdk_from_board"
     mkdir -p "$results_root"
     chmod 700 "$results_root"
     RESULT_DIR=$(mktemp -d "$results_root/$(date +%Y%m%d-%H%M%S)-${SSH_HOST//:/_}.XXXXXX")

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+COLLECTION_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+FOLDERS=(
+    01_Chip_Datasheets 02_Vendor_Boards 03_Compute_Modules
+    04_Breakout_Carrier_Boards 05_SDK_and_BSP_Docs
+    06_Web_Archive_HTML 07_Index 08_Non_RK3588_Reference
+)
+if [[ ${1:-} == --help ]]; then
+    printf 'Usage: %s [--yes]\nManual folders ၈ ခုနဲ့ drive_download.zip ကို ဖျက်ပါတယ်။\n' "$0"
+    exit 0
+fi
+if [[ $# -gt 1 || ( $# -eq 1 && $1 != --yes ) ]]; then
+    printf 'Usage: %s [--yes]\n' "$0" >&2
+    exit 2
+fi
+printf 'ဖျက်မည့်နေရာ: %s\n' "$COLLECTION_DIR"
+printf '  %s\n' "${FOLDERS[@]}" drive_download.zip
+printf 'README.md၊ .gitkeep နဲ့ scripts တွေကို ထားခဲ့ပါမယ်။\n'
+if [[ ${1:-} != --yes ]]; then
+    read -r -p 'ဖျက်ရန် yes ရိုက်ပါ: ' answer
+    [[ $answer == yes ]] || { echo 'မဖျက်တော့ပါ။'; exit 0; }
+fi
+for folder in "${FOLDERS[@]}"; do
+    rm -rf -- "$COLLECTION_DIR/$folder"
+done
+rm -f -- "$COLLECTION_DIR/drive_download.zip"
+echo 'Manuals ဖျက်ပြီးပါပြီ။'

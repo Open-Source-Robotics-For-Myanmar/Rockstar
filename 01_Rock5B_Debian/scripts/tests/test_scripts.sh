@@ -106,18 +106,18 @@ MOCK
 chmod +x "$WORK/bin/ssh"
 export PATH="$WORK/bin:$PATH"
 printf 'board\nuser\n22\na\n0\n' | bash "$WORK/scripts/02_check_hardwares.sh" > "$WORK/hardware.log"
-files=$(find "$WORK/scripts/check_results" -name '*.txt' | wc -l)
+files=$(find "$WORK/data/check_results_to_build_sdk_from_board" -name '*.txt' | wc -l)
 [[ $files == 14 ]]
-! grep -R -q 'REMOTE_EXIT=[1-9]' "$WORK/scripts/check_results"
+! grep -R -q 'REMOTE_EXIT=[1-9]' "$WORK/data/check_results_to_build_sdk_from_board"
 printf 'board\nroot\n22\n' | bash "$WORK/scripts/03_check_base_dependencies.sh" > "$WORK/dependencies.log"
-grep -Rq 'MOCK inventory output' "$WORK/scripts/check_results"
-requirements=$(find "$WORK/scripts/check_results" -name SDK_REQUIREMENTS.md -print -quit)
+grep -Rq 'MOCK inventory output' "$WORK/data/check_results_to_build_sdk_from_board"
+requirements=$(find "$WORK/data/check_results_to_build_sdk_from_board" -name SDK_REQUIREMENTS.md -print -quit)
 [[ -s $requirements ]]
 grep -q '^# ROCK 5B Cross-Compile SDK / Sysroot Requirements' "$requirements"
 grep -q '^## Required in the target sysroot' "$requirements"
 grep -q '^## Host-only toolchain requirements' "$requirements"
 printf 'board\nroot\n22\n' | MOCK_INVENTORY=1 bash "$WORK/scripts/03_check_base_dependencies.sh" > "$WORK/realistic-dependencies.log"
-requirements=$(grep -l 'OS codename | resolute' "$WORK"/scripts/check_results/*/SDK_REQUIREMENTS.md)
+requirements=$(grep -l 'OS codename | resolute' "$WORK"/data/check_results_to_build_sdk_from_board/*/SDK_REQUIREMENTS.md)
 grep -q 'OS codename | resolute' "$requirements"
 grep -q 'Target architecture | arm64' "$requirements"
 grep -q 'libc6-dev:arm64=2.43-2ubuntu2.3' "$requirements"
@@ -131,7 +131,7 @@ mkdir -p "$WORK/archive-source/usr/include"
 printf 'mock header\n' > "$WORK/archive-source/usr/include/mock.h"
 printf 'board\n\n\n' | MOCK_ARCHIVE=1 MOCK_ARCHIVE_SOURCE="$WORK/archive-source" \
     bash "$WORK/scripts/04_fetch_sysroot_archive_from_board.sh" > "$WORK/archive.log"
-archive=$(find "$WORK/scripts/sysroot_archive" -maxdepth 1 -name '*.tar' -print -quit)
+archive=$(find "$WORK/data/fetch_sysroot_archive_from_board" -maxdepth 1 -name '*.tar' -print -quit)
 [[ -s $archive ]]
 tar -tf "$archive" | grep -q './usr/include/mock.h'
 [[ -s $archive.sha256 ]]

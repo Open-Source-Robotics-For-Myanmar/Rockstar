@@ -5,7 +5,7 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/common.sh"
 
 connect_board root
-ARCHIVE_DIR="$SCRIPT_DIR/sysroot_archive"
+ARCHIVE_DIR="$SCRIPT_DIR/../data/fetch_sysroot_archive_from_board"
 mkdir -p "$ARCHIVE_DIR"
 chmod 700 "$ARCHIVE_DIR"
 

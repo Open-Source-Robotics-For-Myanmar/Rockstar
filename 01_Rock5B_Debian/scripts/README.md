@@ -17,13 +17,13 @@ cd 01_Rock5B_Debian/scripts
 | `01` | `../vendor_images/*.img.xz` ရွေး၊ disk ရွေး၊ unmount/flash/sync လုပ် |
 | `02` | SSH ချိတ်၊ hardware menu ရွေး၊ output သိမ်း |
 | `03` | SSH ချိတ်၊ OS/packages/ABI/libs/headers/kernel inventory နှင့် `SDK_REQUIREMENTS.md` ထုတ် |
-| `04` | `04_fetch_sysroot_archive_from_board.sh` ဖြင့် SSH ချိတ်၊ board မှ runtime libraries/headers ကို tar ဖြင့် host ရှိ `sysroot_archive/` ထဲယူ |
+| `04` | `04_fetch_sysroot_archive_from_board.sh` ဖြင့် SSH ချိတ်၊ board မှ runtime libraries/headers ကို tar ဖြင့် host ရှိ `../data/fetch_sysroot_archive_from_board/` ထဲယူ |
 | `05` | Host ပေါ်တွင် manual target baseline inputs ဖြင့် no-sysroot ARM64 workspace/toolchain configuration ဖန်တီး |
 | `06` | Python Tkinter GUI ဖြင့် `05` နဲ့ အတူတူ no-sysroot workspace ဖန်တီး — field အလိုက် help, review, `yes` confirmation ပါ |
 
 - **01:** Select the image and disk, confirm with `yes`, then flash and sync. No checksum or read-back verification.
 - **02/03:** IP၊ user၊ port ထည့်ပါ။ Password လိုလျှင် SSH ကတောင်းသည်။ Host key fingerprint ကိုစစ်ပြီးမှ လက်ခံပါ။ Password ကို log မရေးပါ။
-- **04:** IP၊ SSH user၊ port ကို prompt မှာထည့်ပါ။ Board ပေါ်တွင် Python သို့မဟုတ် package installation မလိုပါ။ Archive သည် `scripts/sysroot_archive/` ထဲတွင် `.tar` နှင့် `.sha256` အဖြစ်သိမ်းသည်။
+- **04:** IP၊ SSH user၊ port ကို prompt မှာထည့်ပါ။ Board ပေါ်တွင် Python သို့မဟုတ် package installation မလိုပါ။ Archive သည် `data/fetch_sysroot_archive_from_board/` ထဲတွင် `.tar` နှင့် `.sha256` အဖြစ်သိမ်းသည်။
 - **03:** Default user `root` ဖြစ်သည်။ Root SSH ပိတ်ထားလျှင် ပုံမှန် user သုံးပါ။ Permission မရှိသော checks က log တွင်ပေါ်မည်။
 - **03:** `SDK_REQUIREMENTS.md` သည် board baseline, target package/version, host-only toolchain နှင့် app အလိုက် ထပ်စစ်ရမည့် vendor dependencies ကို သီးခြားဖော်ပြသည်။ SDK လမ်းညွှန်မစမီ အဲဒီဖိုင်ကိုဖတ်ပါ။ ၎င်းသည် အလိုအလျောက်ပြီးပြည့်စုံသော app dependency list မဟုတ်ပါ။
 - **05:** `--help` ကိုကြည့်ပြီး host မှ run ပါ။ Board နှင့် SSH မချိတ်ပါ၊ package install/update မလုပ်ပါ၊ target sysroot မတည်ဆောက်ပါ။ Script က board ပေါ်တွင် run ရမည့် read-only commands ကိုပြပြီး ရလဒ်များကို လူကိုယ်တိုင်ထည့်စေသည်။ `SDK_ROOT` ဖြင့် destination ရွေးနိုင်ပြီး ရှိပြီးသား path ကို မထပ်ရေးပါ။ AArch64 cross C/C++ compiler, CMake, Ninja, pkg-config နှင့် readelf ကို host မှ ကြိုတင်ပြင်ဆင်ထားရမည်။ RKNN/libdatachannel ကဲ့သို့ third-party libraries ကို ဒီအဆင့်တွင် မထည့်ပါ။
@@ -33,7 +33,7 @@ cd 01_Rock5B_Debian/scripts
 - **06:** `python_gui_rules.md` အတိုင်း font ကို `Roboto` လို့ အမြဲ configure လုပ်ပါတယ်။ `scripts/fonts/Roboto-*.ttf` ကို fontconfig ထဲ ထည့်ပေးပေမယ့် **no-Xft Tk** build မှာ Tk က TTF family ကို မမြင်လို့ core font နဲ့ အစားထိုးဖြစ်နေတယ်။ Roboto ကို မြင်လိုရင် Xft-enabled Tk လိုအပ်ပါတယ်။
 - **06:** ထွက်လာတဲ့ ဖိုင်/ဖိုလ်ဒါတွေက `05` နဲ့ အတိအကျ အတူတူပါ (`env.sh`, `bin/rk3588-pkg-config`, `toolchains/rk3588.cmake`, `metadata/*`, `models/`)။ နောက်တစ်ဆင့်အတွက် [SDK environment guide](../README/07_create_RK3588_SDK_env_on_ubuntu2204.md) နဲ့ [smoke-test guide](../README/08_build_smoke_test_project.md) ကို လိုက်ပါ။
 - **02:** `a` သည် inventory အားလုံး။ `15` သည် installed `stress-ng` ဖြင့် CPU load 60s စမ်းခြင်း။ Cooling ပြင်ထားပါ။ အခြား checks များသည် read-only inventory ဖြစ်သည်။
-- Output: `check_results/<timestamp>-<host>.<id>/` ထဲတွင် `.txt` inventory logs နှင့် `SDK_REQUIREMENTS.md` ရှိသည်။ Hardware detection တစ်ခုတည်းက PASS မဟုတ်ပါ။ Camera check သည် `v4l2-ctl` မရှိလျှင်လည်း `/dev/video*` နှင့် sysfs အမည်/path ကို စာရင်းပြုစုသည်။ NPU check သည် debugfs load/version နှင့် kernel messages ကို ဖတ်ရန်ကြိုးစားသည်။ SSH user တွင် permission မရှိပါက `sudo -n` ရနိုင်မှသာ ဖတ်မည်၊ မရလျှင် log ထဲရှိ `sudo` command ကို board ပေါ်တွင် manual စမ်းပါ။ NPU inference အတွက် compatible native demo ထပ်လိုသည်။
+- Output: `../data/check_results_to_build_sdk_from_board/<timestamp>-<host>.<id>/` ထဲတွင် `.txt` inventory logs နှင့် `SDK_REQUIREMENTS.md` ရှိသည်။ Hardware detection တစ်ခုတည်းက PASS မဟုတ်ပါ။ Camera check သည် `v4l2-ctl` မရှိလျှင်လည်း `/dev/video*` နှင့် sysfs အမည်/path ကို စာရင်းပြုစုသည်။ NPU check သည် debugfs load/version နှင့် kernel messages ကို ဖတ်ရန်ကြိုးစားသည်။ SSH user တွင် permission မရှိပါက `sudo -n` ရနိုင်မှသာ ဖတ်မည်၊ မရလျှင် log ထဲရှိ `sudo` command ကို board ပေါ်တွင် manual စမ်းပါ။ NPU inference အတွက် compatible native demo ထပ်လိုသည်။
 - SDK inventory သည် sysroot backup မဟုတ်ပါ။ [Archive သုံးပြီး sysroot ပြင်နည်း](../README/04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [archive မပါဘဲ package မှ sysroot ပြင်နည်း](../README/05_create_cross_compiler_without_sysroot_archive.md) ကိုရွေးပါ။
 
 Host တွင် Bash၊ OpenSSH၊ coreutils၊ util-linux၊ xz လိုသည်။ `06` အတွက် Python 3 နှင့် tkinter (`python3-tk`) လည်း လိုသည်။ Flash အတွက်သာ sudo လိုသည်။ Scripts က package install၊ driver ပြောင်းခြင်း၊ GPIO မောင်းခြင်း မလုပ်ပါ။ SSH login logs နှင့် host `known_hosts` ကတော့ ပုံမှန် update ဖြစ်နိုင်သည်။

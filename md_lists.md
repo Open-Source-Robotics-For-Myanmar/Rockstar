@@ -1,7 +1,7 @@
 # $\color{#00c853}{\text{Markdown ဖိုင်စာရင်း}}$
 
 Repo root ကနေ relative path ဖြင့် ဖော်ပြထားသည်။ ဖိုင်အသစ် create / ရွှေ့ / နာမည်ပြောင်း / ဖျက်တိုင်း ဒီစာရင်းကို စစ်ပြီး update လုပ်ပါ။
-Submodule နှင့် vendor directory (`rknn-toolkit2`, `RockChip-NPU`, `vision_ai_box`, `sysroot_archive`, `check_results`) ထဲက markdown ဖိုင်တွေကို ဒီစာရင်းထဲ မထည့်ပါ။
+Submodule နှင့် vendor directory (`rknn-toolkit2`, `RockChip-NPU`, `vision_ai_box`, `01_Rock5B_Debian/data/fetch_sysroot_archive_from_board`, `01_Rock5B_Debian/data/check_results_to_build_sdk_from_board`) ထဲက markdown ဖိုင်တွေကို ဒီစာရင်းထဲ မထည့်ပါ။
 
 ## $\color{red}{\text{Repo root}}$
 
