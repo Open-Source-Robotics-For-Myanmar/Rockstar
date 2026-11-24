@@ -30,6 +30,7 @@ cd 01_Rock5B_Debian/scripts
 - **05:** `--non-interactive` အသုံးပြုလျှင် target metadata, SDK_ROOT နှင့် `CONFIRM_CREATE=yes` အပါအဝင် လိုအပ်သော environment variables အားလုံးကို သတ်မှတ်ပါ။ ပြီးလျှင် [SDK environment guide](../README/07_create_RK3588_SDK_env_on_ubuntu2204.md) နှင့် [smoke-test guide](../README/08_build_smoke_test_project.md) ကိုလိုက်ပါ။
 - **06:** Python Tkinter GUI ဖြစ်ပါတယ်။ `05` နဲ့ အပြုအမူအတူတူ — board metadata ၉ ခုကို လူကိုယ်တိုင်ထည့်စေပြီး host cross-toolchain ကို စစ်ဆေးကာ no-sysroot ARM64 workspace ဖန်တီးသည်။ SSH မချိတ်ပါ၊ package install/download/build မလုပ်ပါ၊ ရှိပြီးသား SDK path ကို မထိပါ။
 - **06:** field တစ်ခုချင်းစီရဲ့ **Help** ခလုတ်က board ပေါ်မှာ run ရမယ့် read-only command တွေနဲ့ ဘာလို့လိုအပ်တယ်ဆိုတာ ပြသည်။ Review မှာ ဖွဲ့စည်းပုံအားလုံးကို ပြပြီး `yes` ရိုက်မှသာ ဖိုင်တွေ ရေးသည်။ `--help` နဲ့ CLI help လည်း ရနိုင်သည်။ GUI က ဖွင့်တာနဲ့ full-screen maximize ဖြစ်ပြီး help/dialog တွေက main window ရဲ့ တစ်ဝက်အရွယ်နဲ့ ပွင့်ပါတယ်။
+- **06:** `python_gui_rules.md` အတိုင်း font ကို `Roboto` လို့ အမြဲ configure လုပ်ပါတယ်။ `scripts/fonts/Roboto-*.ttf` ကို fontconfig ထဲ ထည့်ပေးပေမယ့် **no-Xft Tk** build မှာ Tk က TTF family ကို မမြင်လို့ core font နဲ့ အစားထိုးဖြစ်နေတယ်။ Roboto ကို မြင်လိုရင် Xft-enabled Tk လိုအပ်ပါတယ်။
 - **06:** ထွက်လာတဲ့ ဖိုင်/ဖိုလ်ဒါတွေက `05` နဲ့ အတိအကျ အတူတူပါ (`env.sh`, `bin/rk3588-pkg-config`, `toolchains/rk3588.cmake`, `metadata/*`, `models/`)။ နောက်တစ်ဆင့်အတွက် [SDK environment guide](../README/07_create_RK3588_SDK_env_on_ubuntu2204.md) နဲ့ [smoke-test guide](../README/08_build_smoke_test_project.md) ကို လိုက်ပါ။
 - **02:** `a` သည် inventory အားလုံး။ `15` သည် installed `stress-ng` ဖြင့် CPU load 60s စမ်းခြင်း။ Cooling ပြင်ထားပါ။ အခြား checks များသည် read-only inventory ဖြစ်သည်။
 - Output: `check_results/<timestamp>-<host>.<id>/` ထဲတွင် `.txt` inventory logs နှင့် `SDK_REQUIREMENTS.md` ရှိသည်။ Hardware detection တစ်ခုတည်းက PASS မဟုတ်ပါ။ Camera check သည် `v4l2-ctl` မရှိလျှင်လည်း `/dev/video*` နှင့် sysfs အမည်/path ကို စာရင်းပြုစုသည်။ NPU check သည် debugfs load/version နှင့် kernel messages ကို ဖတ်ရန်ကြိုးစားသည်။ SSH user တွင် permission မရှိပါက `sudo -n` ရနိုင်မှသာ ဖတ်မည်၊ မရလျှင် log ထဲရှိ `sudo` command ကို board ပေါ်တွင် manual စမ်းပါ။ NPU inference အတွက် compatible native demo ထပ်လိုသည်။
@@ -39,18 +40,28 @@ Host တွင် Bash၊ OpenSSH၊ coreutils၊ util-linux၊ xz လိုသ�
 
 စမ်းသပ်မှု: `bash tests/test_scripts.sh` — fake SSH/disk metadata သာသုံးပြီး SD card မရေးပါ၊ board မချိတ်ပါ။
 
-`06` အတွက် venv ကို `scripts/.venv` ထဲမှာပဲ ထားပါ (repo rule အတိုင်း `.gitkeep` ပါ):
+`06` အတွက် ပထမဆုံး setup ကို တစ်ကြိမ်လုပ်ပါ:
 
 ```bash
+sudo apt install python3-tk python3-venv
 cd 01_Rock5B_Debian/scripts
-python3 -m venv .venv
+/usr/bin/python3 -m venv .venv
+touch .venv/.gitkeep
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python 06_create_RK3588_SDK_env_without_sysroot.py
 ```
 
-`requirements.txt` မှာ third-party package မပါပါ — stdlib (tkinter) ပဲ သုံးတာမို့ အထက်က `pip install` က ဘာမှ မထည့်ဘူး။
+ပြီးရင် repo root ကနေ GUI ကို ခေါ်ပါ:
+
+```bash
+./01_Rock5B_Debian/automation
+```
+
+`automation` မှာ path variable နဲ့ command နှစ်ကြောင်းပဲ ပါပါတယ်: `.venv` ကို activate လုပ်ပြီး `.venv/bin/python` နဲ့ `06_create_RK3588_SDK_env_without_sysroot.py` ကို run ပါတယ်။ ဘယ် directory ကနေခေါ်ခေါ် script ရှိတဲ့နေရာက path ကို သုံးပါတယ်။
+
+လက်ရှိ `requirements.txt` မှာ third-party package မလိုသေးပါ။ Tkinter ကို system ရဲ့ `python3-tk` package ကနေ သုံးပါတယ်။ Roboto Regular/Bold က `scripts/fonts/` ထဲမှာ ပါပြီးသားပါ။
 
 References:
+- `01_Rock5B_Debian/automation`
 - `01_Rock5B_Debian/scripts/06_create_RK3588_SDK_env_without_sysroot.py`
 - `01_Rock5B_Debian/scripts/requirements.txt`
 - `01_Rock5B_Debian/scripts/05_create_RK3588_SDK_env_without_sysroot.sh`

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+SCRIPTS_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/scripts" && pwd)"
+
+source "$SCRIPTS_DIR/.venv/bin/activate"
+exec "$SCRIPTS_DIR/.venv/bin/python" "$SCRIPTS_DIR/06_create_RK3588_SDK_env_without_sysroot.py" "$@"

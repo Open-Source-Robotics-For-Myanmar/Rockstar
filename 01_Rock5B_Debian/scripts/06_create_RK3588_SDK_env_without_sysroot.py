@@ -5,7 +5,7 @@ Tkinter GUI port of ``05_create_RK3588_SDK_env_without_sysroot.sh``.
 
 The nine inputs are metadata only. This program never SSHes to the board,
 installs packages, downloads libraries, builds a project, or modifies an
-existing SDK directory. Stdlib only; no virtual environment is required.
+existing SDK directory. Stdlib only; run via ../automation to use scripts/.venv.
 
 Headless entry points used for testing:
     validate_values(values) -> dict
@@ -25,9 +25,15 @@ import subprocess
 import sys
 import tempfile
 import threading
-import tkinter as tk
-from tkinter import font as tkfont, messagebox, ttk
-from tkinter.scrolledtext import ScrolledText
+try:
+    import tkinter as tk
+    from tkinter import font as tkfont, messagebox, ttk
+    from tkinter.scrolledtext import ScrolledText
+except ImportError as exc:
+    raise SystemExit(
+        "Tkinter is unavailable for %s. Install python3-tk for /usr/bin/python3 "
+        "and run this GUI via ../automation." % sys.executable
+    ) from exc
 
 # python_gui_rules.md palette
 BUTTON_COLOR = "#08E0F5"
@@ -47,150 +53,114 @@ def _h(tag: str, text: str) -> tuple[str, str]:
 
 FIELD_SPECS = [
     {
-        "key": "TARGET_BOARD",
-        "label": "Target board/model",
-        "default": "",
+        "key": 'TARGET_BOARD',
+        "label": 'Target board/model',
+        "default": '',
         "help": [
-            _h("On target:", "tr -d '\\0' < /proc/device-tree/model; echo"),
-            _h("", "grep -E '^(BOARD_NAME|BOARD)=' /etc/armbian-release"),
-            _h(
-                "Enter:",
-                'one line, e.g. "Radxa ROCK 5B". '
-                "Why: board identity in metadata; no compiler effect.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'SDK ကို ဘယ် board အတွက် ပြင်ဆင်ထားသလဲ မှတ်တမ်းတင်ဖို့ board/model အမည် လိုပါတယ်။'),
+            _h('အလုပ်လုပ်ပုံ:', 'Device tree ထဲက model ကို ဖတ်ပြီး tr က စာသားအဆုံးရှိ NUL ကို ဖယ်ပေးပါတယ်။ Armbian သုံးထားမှ အောက်က အစားထိုး command ကို သုံးပါ။'),
+            _h('အရေးကြီးပုံ:', 'Board များစွာရှိတဲ့အခါ SDK မှတ်တမ်း မရောစေဖို့ပါ။ ဒီအမည်ထည့်တာက driver သို့မဟုတ် compiler ကို အလိုအလျောက် မရွေးပေးပါ။'),
+            _h('On target:', "tr -d '\\0' < /proc/device-tree/model; echo"),
+            _h('Alternative:', "grep -E '^(BOARD_NAME|BOARD)=' /etc/armbian-release"),
+            _h('Enter:', 'ဥပမာ Radxa ROCK 5B ကို တစ်ကြောင်းတည်း ထည့်ပါ။'),
         ],
     },
     {
-        "key": "TARGET_COMPATIBLE",
-        "label": "Device-tree compatible value",
-        "default": "",
+        "key": 'TARGET_COMPATIBLE',
+        "label": 'Device-tree compatible value',
+        "default": '',
         "help": [
-            _h(
-                "On target:",
-                "tr '\\0' '\\n' < /proc/device-tree/compatible | grep -m1 rk3588",
-            ),
-            _h("", "prints one value, e.g. rockchip,rk3588"),
-            _h("Enter:", 'ONE line containing rk3588, e.g. "rockchip,rk3588".'),
-            _h(
-                "Why:",
-                "guard against the wrong SoC; multi-line values break the "
-                "markdown table.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Board ရဲ့ SoC က ဒီ SDK ရည်ရွယ်ထားတဲ့ RK3588 ဟုတ်မဟုတ် စစ်ဖို့ပါ။'),
+            _h('အလုပ်လုပ်ပုံ:', 'Device tree ရဲ့ compatible စာရင်းကို Linux က hardware နဲ့ driver ကိုက်ညီမှု ရွေးရာမှာ သုံးပါတယ်။ tr က NUL ခြားထားတဲ့စာရင်းကို တစ်ကြောင်းစီခွဲပြီး grep က rk3588 ပါတဲ့ ပထမတန်ဖိုးကို ထုတ်ပါတယ်။'),
+            _h('အရေးကြီးပုံ:', 'မတူတဲ့ SoC အတွက် SDK မှားဆောက်ခြင်းကို တားပေးပါတယ်။ ဒီ script က ထည့်ထားတဲ့စာသားမှာ rk3588 ပါမပါပဲ စစ်ပြီး board ကို ကိုယ်တိုင်ချိတ်စစ်တာ မဟုတ်ပါ။'),
+            _h('On target:', "tr '\\0' '\\n' < /proc/device-tree/compatible | grep -m1 rk3588"),
+            _h('Enter:', 'ဥပမာ rockchip,rk3588 — rk3588 ပါတဲ့ တန်ဖိုးတစ်ကြောင်းသာ ထည့်ပါ။ Output မရရင် board ကို ပြန်စစ်ပါ၊ unknown မထည့်ပါနဲ့။'),
         ],
     },
     {
-        "key": "TARGET_ARCH",
-        "label": "Target architecture (arm64/aarch64)",
-        "default": "",
+        "key": 'TARGET_ARCH',
+        "label": 'Target architecture (arm64/aarch64)',
+        "default": '',
         "help": [
-            _h("On target:", "dpkg --print-architecture (arm64)  |  uname -m (aarch64)"),
-            _h(
-                "Enter:",
-                "arm64 or aarch64 (normalised to aarch64). "
-                "Why: confirms a 64-bit ARM target.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Target OS က 64-bit ARM program ကို run နိုင်မယ့် architecture ဟုတ်မဟုတ် သိဖို့ပါ။'),
+            _h('အလုပ်လုပ်ပုံ:', 'dpkg က OS packages ရဲ့ architecture ကို ပြပါတယ်။ uname -m က kernel ရဲ့ architecture ကို ပြပါတယ်။ arm64 နဲ့ aarch64 က ဒီနေရာမှာ 64-bit ARM ကို ရည်ညွှန်းပါတယ်။'),
+            _h('အရေးကြီးပုံ:', 'SDK က AArch64 compiler ကို သုံးတာမို့ x86_64 သို့မဟုတ် 32-bit ARM OS အတွက် မကိုက်ပါ။ Script က arm64/aarch64 ကိုသာ လက်ခံပြီး aarch64 အဖြစ် မှတ်တမ်းတင်ပါတယ်။'),
+            _h('On target:', 'dpkg --print-architecture'),
+            _h('Cross-check:', 'uname -m'),
+            _h('Enter:', 'arm64 သို့မဟုတ် aarch64။ နှစ်ခုကွဲနေရင် userspace က 32-bit ဖြစ်မဖြစ် စစ်ပါ၊ kernel output တစ်ခုတည်းကို မမှီခိုပါနဲ့။'),
         ],
     },
     {
-        "key": "TARGET_OS",
-        "label": "Target OS name",
-        "default": "unknown",
+        "key": 'TARGET_OS',
+        "label": 'Target OS name',
+        "default": 'unknown',
         "help": [
-            _h("On target:", '. /etc/os-release; printf \'%s\\n\' "$PRETTY_NAME"'),
-            _h(
-                "Enter:",
-                'e.g. "Debian GNU/Linux 12 (bookworm)". '
-                "Why: records the target userspace.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Target ပေါ်က Linux distribution အမည်နဲ့ version ကို မှတ်တမ်းထားဖို့ပါ။'),
+            _h('အလုပ်လုပ်ပုံ:', '/etc/os-release ထဲက PRETTY_NAME ကို ဖတ်ထုတ်ပါတယ်။ ဒါက Debian/Ubuntu စတဲ့ OS userspace အမည်ဖြစ်ပြီး kernel version နဲ့ မတူပါ။'),
+            _h('အရေးကြီးပုံ:', 'နောက်ပိုင်း library/package ရှာတဲ့အခါ၊ အခြားစက်မှာ ပြန်ဆောက်တဲ့အခါ ဘယ် OS အတွက်လဲ သိနိုင်ပါတယ်။ ဒီတန်ဖိုးက compiler libraries ကို မပြောင်းပေးပါ။'),
+            _h('On target:', '. /etc/os-release; printf \'%s\\n\' "$PRETTY_NAME"'),
+            _h('Enter:', 'ဥပမာ Debian GNU/Linux 12 (bookworm)။ မသိရင် unknown ထည့်နိုင်ပါတယ်။'),
         ],
     },
     {
-        "key": "TARGET_CODENAME",
-        "label": "Target OS codename",
-        "default": "unknown",
+        "key": 'TARGET_CODENAME',
+        "label": 'Target OS codename',
+        "default": 'unknown',
         "help": [
-            _h("On target:", '. /etc/os-release; printf \'%s\\n\' "$VERSION_CODENAME"'),
-            _h("", 'if empty, use VERSION_ID or "unknown"'),
-            _h(
-                "Enter:",
-                'e.g. "bookworm", "jammy". Why: pins the exact userspace release.',
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Distribution ရဲ့ release အမည်တိုကို သိမ်းဖို့ပါ၊ ဥပမာ Debian ရဲ့ bookworm။'),
+            _h('အလုပ်လုပ်ပုံ:', '/etc/os-release ထဲက VERSION_CODENAME ကို ထုတ်ပါတယ်။ မရှိရင် VERSION_ID ကို သုံးပါတယ်။'),
+            _h('အရေးကြီးပုံ:', 'OS အမည်တူပေမဲ့ release မတူရင် package/library version တွေ ကွာနိုင်ပါတယ်။ မှန်တဲ့ release အတွက် documentation နဲ့ package repository ကို ရှာဖို့ အထောက်အကူဖြစ်ပြီး repository ကို ဒီ script က မပြောင်းပါ။'),
+            _h('On target:', '. /etc/os-release; printf \'%s\\n\' "${VERSION_CODENAME:-$VERSION_ID}"'),
+            _h('Enter:', 'ဥပမာ bookworm၊ jammy သို့မဟုတ် version number။ Output မရှိရင် unknown ထည့်ပါ။'),
         ],
     },
     {
-        "key": "TARGET_KERNEL",
-        "label": "Target kernel release",
-        "default": "unknown",
+        "key": 'TARGET_KERNEL',
+        "label": 'Target kernel release',
+        "default": 'unknown',
         "help": [
-            _h("On target:", "uname -r   (not uname -v)"),
-            _h(
-                "Enter:",
-                'e.g. "6.1.115-vendor-rk35xx". '
-                "Why: kernel UAPI compatibility note (no headers installed).",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Target မှာ လက်ရှိ run နေတဲ့ Linux kernel release ကို မှတ်တမ်းထားဖို့ပါ။'),
+            _h('အလုပ်လုပ်ပုံ:', 'uname -r က လက်ရှိ boot လုပ်ထားတဲ့ kernel release ကို ပြပါတယ်။ uname -v က build အသေးစိတ်ဖြစ်လို့ ဒီ input အတွက် မသုံးပါ။'),
+            _h('အရေးကြီးပုံ:', 'Camera/NPU driver၊ ioctl နဲ့ kernel interface ဆိုင်ရာ ပြဿနာရှာရာမှာ လိုပါတယ်။ Version ထည့်ရုံနဲ့ kernel headers/driver မတင်ပေးသလို kernel module build အတွက်လည်း ဒီ SDK တစ်ခုတည်း မလုံလောက်ပါ။'),
+            _h('On target:', 'uname -r'),
+            _h('Enter:', 'ဥပမာ 6.1.115-vendor-rk35xx။ မသိရင် unknown ထည့်ပါ။'),
         ],
     },
     {
-        "key": "TARGET_GLIBC",
-        "label": "Target GNU libc version",
-        "default": "unknown",
+        "key": 'TARGET_GLIBC',
+        "label": 'Target GNU libc version',
+        "default": 'unknown',
         "help": [
-            _h("On target:", "getconf GNU_LIBC_VERSION | awk '{print $2}'"),
-            _h(
-                "",
-                "ldd --version | head -n1 prints a whole banner - enter only "
-                "the number",
-            ),
-            _h("Enter:", 'version number, e.g. "2.36".'),
-            _h(
-                "Why:",
-                "ABI check - host cross glibc here is 2.35; the board needs "
-                ">= that or a matching sysroot.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Target ရဲ့ C runtime library (glibc) version ကို သိဖို့ပါ။ Program ရဲ့ file I/O၊ memory နဲ့ system call wrapper စတဲ့ အခြေခံလုပ်ဆောင်ချက်တွေကို ပံ့ပိုးပါတယ်။'),
+            _h('အလုပ်လုပ်ပုံ:', 'getconf က GNU libc version ကို ထုတ်ပြီး awk က version နံပါတ်ကိုသာ ရွေးပါတယ်။ Dynamic binary ကို run တဲ့အခါ လိုအပ်တဲ့ GLIBC symbol versions တွေ target library မှာ ရှိရပါတယ်။'),
+            _h('အရေးကြီးပုံ:', 'ဒီ SDK က target sysroot မသုံးဘဲ host cross-toolchain ရဲ့ libraries နဲ့ link လုပ်ပါတယ်။ Target မှာ binary လိုတဲ့ version မရှိရင် GLIBC_x.y not found ဖြစ်နိုင်ပါတယ်။ ဒီ input ကို သိမ်းထားတာသာဖြစ်ပြီး ABI ကို အလိုအလျောက် မစစ်၊ မပြင်ပေးပါ။'),
+            _h('On target:', "getconf GNU_LIBC_VERSION | awk '{print $2}'"),
+            _h('Enter:', 'ဥပမာ 2.36 — နံပါတ်သာထည့်ပါ။ GNU libc မရှိ သို့မဟုတ် မသိရင် unknown ထည့်နိုင်ပေမဲ့ GNU toolchain နဲ့ ကိုက်ညီမှုကို သီးခြားစစ်ရပါမယ်။'),
         ],
     },
     {
-        "key": "TARGET_LIBSTDCXX",
-        "label": "Target libstdc++ runtime version",
-        "default": "unknown",
+        "key": 'TARGET_LIBSTDCXX',
+        "label": 'Target libstdc++ runtime version',
+        "default": 'unknown',
         "help": [
-            _h(
-                "On target:",
-                "dpkg-query -W -f='${Version}\\n' libstdc++6:arm64",
-            ),
-            _h(
-                "",
-                "strings /usr/lib/aarch64-linux-gnu/libstdc++.so.6 | "
-                "grep -m1 GLIBCXX_",
-            ),
-            _h(
-                "Enter:",
-                'package version, e.g. "12.3.0-1ubuntu1~22.04.3", or the '
-                "highest GLIBCXX_ symbol.",
-            ),
-            _h(
-                "Why:",
-                "C++ ABI check against host libstdc++ 12.3.0 (GCC 11); older "
-                "board symbols break C++ binaries.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'Target ရဲ့ C++ runtime library (libstdc++) version ကို သိဖို့ပါ။ std::string၊ containers၊ streams စတဲ့ C++ library လုပ်ဆောင်ချက်တွေကို ပံ့ပိုးပါတယ်။'),
+            _h('အလုပ်လုပ်ပုံ:', 'dpkg-query က installed package version ကို ပြပါတယ်။ အစားထိုး command က library ထဲက GLIBCXX version အမှတ်အသားတွေကို version အလိုက်စီပြီး အမြင့်ဆုံးကို ထုတ်ပါတယ်။ Package version နဲ့ GLIBCXX symbol version က တန်ဖိုးအမျိုးအစား မတူပါ။'),
+            _h('အရေးကြီးပုံ:', 'Cross compiler နဲ့ build ထားတဲ့ C++ binary က target မှာမရှိတဲ့ symbol ကို လိုရင် GLIBCXX_x.y.z not found ဖြစ်နိုင်ပါတယ်။ ဒီမှတ်တမ်းတစ်ခုတည်းနဲ့ ABI ကိုက်ညီမှု မအာမခံနိုင်ဘဲ binary လိုတဲ့ symbols နဲ့ target library ကို သီးခြားတိုက်စစ်ရပါတယ်။'),
+            _h('On target:', "dpkg-query -W -f='${Version}\\n' libstdc++6:arm64"),
+            _h('Alternative:', "strings /usr/lib/aarch64-linux-gnu/libstdc++.so.6 | grep -E '^GLIBCXX_[0-9]+(\\.[0-9]+)*$' | sort -V | tail -n 1"),
+            _h('Enter:', 'Installed package version သို့မဟုတ် ဥပမာ GLIBCXX_3.4.30 ကို ထည့်ပါ။ Library path က စက်အလိုက်ကွာနိုင်ပါတယ်။ မရှိ/မသိရင် unknown ထည့်ပါ။ Script က runtime library ကို install မလုပ်ပေးပါ။'),
         ],
     },
     {
-        "key": "SDK_ROOT",
-        "label": "Absolute SDK workspace path (on host)",
+        "key": 'SDK_ROOT',
+        "label": 'Absolute SDK workspace path (on host)',
         "default": SDK_DEFAULT,
         "help": [
-            _h("On target:", "not a board value - choose a LOCAL destination directory."),
-            _h(
-                "Enter:",
-                'absolute path that does not exist yet, e.g. '
-                '"$HOME/RK3588_SDK_on_Ubuntu2204".',
-            ),
-            _h(
-                "Why:",
-                "generated files go here; existing directories are never "
-                "modified.",
-            ),
+            _h('ရည်ရွယ်ချက်:', 'SDK workspace အသစ်ကို build host ပေါ်မှာ ဘယ်နေရာဖန်တီးမလဲ သတ်မှတ်ဖို့ပါ။ Target board ရဲ့ folder လမ်းကြောင်း မဟုတ်ပါ။'),
+            _h('အလုပ်လုပ်ပုံ:', 'ဒီ folder ထဲမှာ env.sh၊ CMake toolchain၊ metadata နဲ့ libraries ထားဖို့ prefix directory တို့ကို ဖန်တီးပါတယ်။ Folder မရှိသေးရဘဲ parent directory မှာ ရေးခွင့်ရှိရပါတယ်။'),
+            _h('အရေးကြီးပုံ:', 'ရှိပြီးသား project/files တွေ မထိခိုက်စေဖို့ ရှိနေပြီးသား destination ကို ငြင်းပါတယ်။ Browse သုံးရင် parent folder ရွေးပြီး SDK folder အသစ်အမည်ပေးပါ။'),
+            _h('On host:', 'pwd'),
+            _h('Enter:', 'ဥပမာ /home/your-user/RK3588_SDK_new လို absolute path အသစ်ကို ထည့်ပါ။ pwd က လက်ရှိ folder ကိုကြည့်ဖို့သာဖြစ်ပြီး အဲဒီရှိပြီးသား folder ကို destination အဖြစ် မထည့်ပါနဲ့။'),
         ],
     },
 ]
@@ -596,9 +566,17 @@ class App:
         self._build()
 
     def _style(self) -> None:
-        available = set(tkfont.families(self.root))
-        default = tkfont.nametofont("TkDefaultFont", root=self.root)
-        self.font_family = "Roboto" if "Roboto" in available else default.actual("family")
+        # python_gui_rules.md requires the Roboto Google font. Request it
+        # unconditionally: checking tkfont.families() made a no-Xft Tk silently
+        # fall back to the X core font "gothic", so the rule was never applied.
+        self.font_family = "Roboto"
+        if "Roboto" not in set(tkfont.families(self.root)):
+            print(
+                "Roboto is unavailable to Tk. Check the bundled fonts/ files "
+                "and use ../automation with system Python and python3-tk "
+                "(Xft support is required on Linux).",
+                file=sys.stderr,
+            )
         for name in ("TkDefaultFont", "TkTextFont", "TkMenuFont", "TkHeadingFont",
                      "TkCaptionFont", "TkSmallCaptionFont", "TkIconFont", "TkTooltipFont"):
             tkfont.nametofont(name, root=self.root).configure(
@@ -993,11 +971,6 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         print("Unknown option: %s (use --help)." % argv[0], file=sys.stderr)
         return 2
-    try:
-        import tkinter  # noqa: F401
-    except ImportError:
-        print("Tkinter is required but not available.", file=sys.stderr)
-        return 1
     _load_bundled_fonts()
     root = tk.Tk()
     App(root)

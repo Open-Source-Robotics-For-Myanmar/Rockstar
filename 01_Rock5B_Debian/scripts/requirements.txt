@@ -1,12 +1,8 @@
-# RK3588 SDK GUI dependencies
-# 06_create_RK3588_SDK_env_without_sysroot.py uses only the Python standard
-# library: tkinter, pathlib, subprocess, shutil, tempfile, threading, queue.
+# No third-party Python packages are currently required by the SDK GUI.
+# Setup: .venv/bin/python -m pip install -r requirements.txt.
+# Add actual PyPI dependencies here if the application later needs them.
 #
-# Tkinter ships with CPython. On Debian/Ubuntu install the system package
-# python3-tk if `import tkinter` fails. No third-party PyPI packages are
-# required, so this file intentionally lists none.
-#
-# Create/use the environment from this directory:
-#   python3 -m venv .venv
-#   .venv/bin/python -m pip install -r requirements.txt
-#   .venv/bin/python 06_create_RK3588_SDK_env_without_sysroot.py
+# Tkinter is part of the base Python installation, not a pip package.
+# Ubuntu/Debian prerequisite: sudo apt install python3-tk python3-venv
+# Create .venv with /usr/bin/python3 so it uses that installation's Tkinter.
+# Roboto Regular/Bold are bundled in fonts/; no font pip package is needed.
