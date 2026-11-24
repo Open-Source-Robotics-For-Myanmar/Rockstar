@@ -1,0 +1,12 @@
+# RK3588 SDK GUI dependencies
+# 06_create_RK3588_SDK_env_without_sysroot.py uses only the Python standard
+# library: tkinter, pathlib, subprocess, shutil, tempfile, threading, queue.
+#
+# Tkinter ships with CPython. On Debian/Ubuntu install the system package
+# python3-tk if `import tkinter` fails. No third-party PyPI packages are
+# required, so this file intentionally lists none.
+#
+# Create/use the environment from this directory:
+#   python3 -m venv .venv
+#   .venv/bin/python -m pip install -r requirements.txt
+#   .venv/bin/python 06_create_RK3588_SDK_env_without_sysroot.py

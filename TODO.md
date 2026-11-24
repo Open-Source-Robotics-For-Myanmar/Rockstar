@@ -15,3 +15,8 @@ deploy လုပ်မယ့် 01_Rock5B_Debian/README/06_deploy_sample_cpp.md 
 နောင်တစ်ချိန် OS အပြောင်းအလဲရှိတဲ့အခါ ကျရင် processor တူပေမယ့် dependencies version တွေပြောင်းလဲနိုင်တဲ့အတွက် အာ့လိုပြောင်းလဲနိုင်တဲ့ အပိုင်းတွေကို ငါက 03_check_base_dependencies.sh သုံးပြီး သွားစစ်ဆေး၊ ရလာတဲ့အချက်အလက်တွေကို အခုလို environment variables _ std input တွေထည့်ထားတဲ့အတွက် အားလုံးအဆင်ပြေစွာ SDK ကို တည်ဆောက်နိုင်မှာဖြစ်ပါတယ်။ 
 
 ဒီ script သည်
+
+
+Vendor Upstream ကိုရှာရန်
+
+Compute Chip Only Upstream ကိုရှာရန်။

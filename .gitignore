@@ -7,3 +7,6 @@
 01_Rock5B_Debian/RK3588_SDK_on_Ubuntu2204/src/rknn-toolkit2
 00_RK3588_Collection/*
 !00_RK3588_Collection/.gitkeep
+01_Rock5B_Debian/scripts/.venv/*
+!01_Rock5B_Debian/scripts/.venv/.gitkeep
+01_Rock5B_Debian/scripts/__pycache__/

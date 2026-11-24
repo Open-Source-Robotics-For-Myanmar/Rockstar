@@ -5,6 +5,9 @@ Submodule နှင့် vendor directory (`rknn-toolkit2`, `RockChip-NPU`, `vi
 
 ## $\color{red}{\text{Repo root}}$
 
+- `./00_RK3588_Collection/README.md`
+- `./00_RK3588_Collection/07_Index/catalog.md`
+- `./00_RK3588_Collection/07_Index/download_report.md`
 - `./README.md`
 - `./TODO.md`
 - `./AGENTS.md`
@@ -34,3 +37,7 @@ Submodule နှင့် vendor directory (`rknn-toolkit2`, `RockChip-NPU`, `vi
 - `./02_Rock5B_Yocto/README.md`
 - `./03_Rock5B_RealtimeLinux/README.md`
 - `./03_Rock5B_RealtimeLinux/RealtimeLinux.md`
+
+## $\color{red}{\text{99 Rockchip Vending Machine}}$
+
+- `./99_Rockchip_VendingMaching/README.md`
