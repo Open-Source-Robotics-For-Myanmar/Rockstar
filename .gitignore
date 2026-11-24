@@ -1,4 +1,5 @@
-01_Rock5B_Debian/vendor_images/
+01_Rock5B_Debian/vendor_images/*
+!01_Rock5B_Debian/vendor_images/.gitkeep
 01_Rock5B_Debian/scripts/check_results/*
 !01_Rock5B_Debian/scripts/check_results/.gitkeep
 01_Rock5B_Debian/scripts/sysroot_archive/*
