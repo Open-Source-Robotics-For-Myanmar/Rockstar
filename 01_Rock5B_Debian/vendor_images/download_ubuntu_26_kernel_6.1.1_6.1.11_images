@@ -1,90 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 IMAGES_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ZIP_FILE="$IMAGES_DIR/drive_images.zip"
-DRIVE_SOURCE=${1:-${IMAGES_DRIVE_URL:-}}
+DRIVE_URLS=(
+    'https://drive.google.com/file/d/1toe0_Xol2inKQ7Z8DxPg_5BjAr6OoAUQ/view?usp=sharing'
+    'https://drive.google.com/file/d/1d-fiOTmMtGGSpfvCZQWcKRmAtfQQuSZO/view?usp=sharing'
+)
+IMAGE_NAMES=(
+    'Armbian_26.8.3_Rock-5b_resolute_vendor_6.1.115_minimal.img.xz'
+    'Armbian_26.8.3_Rock-5b_trixie_vendor_6.1.115_minimal.img.xz'
+)
 
 if [[ ${1:-} == --help ]]; then
-    printf 'Usage: %s [GOOGLE_DRIVE_URL_OR_ID | --local]\n' "$0"
-    printf 'IMAGES_DRIVE_URL ကိုလည်း သတ်မှတ်နိုင်ပါတယ်။ --local က ရှိပြီးသား drive_images.zip ကို ဖြည်ပါတယ်။\n'
+    printf 'Usage: %s\nGoogle Drive မှ image နှစ်ခုကို vendor_images/ ထဲ သိမ်းပါတယ်။ Input မလိုပါ။\n' "$0"
     exit 0
 fi
-if [[ $# -gt 1 ]]; then
-    echo "Expected one Google Drive URL/file ID or --local." >&2
-    exit 2
-fi
-if [[ -z $DRIVE_SOURCE ]]; then
-    read -r -p 'Google Drive ZIP link သို့မဟုတ် file ID: ' DRIVE_SOURCE
-fi
-[[ -n $DRIVE_SOURCE ]] || { echo 'Google Drive link လိုပါတယ်။' >&2; exit 1; }
-command -v python3 >/dev/null || { echo 'python3 လိုပါတယ်။' >&2; exit 1; }
-
+[[ $# -eq 0 ]] || { echo 'ဒီ script မှာ arguments မလိုပါ။' >&2; exit 2; }
+command -v xz >/dev/null || { echo 'xz လိုပါတယ်။ sudo apt install xz-utils' >&2; exit 1; }
 TEMP_DIR=$(mktemp -d "$IMAGES_DIR/.images-download.XXXXXX")
 trap 'rm -rf -- "$TEMP_DIR"' EXIT
-if [[ $DRIVE_SOURCE == --local ]]; then
-    [[ -f $ZIP_FILE ]] || { echo "ZIP မရှိပါ: $ZIP_FILE" >&2; exit 1; }
-    ARCHIVE=$ZIP_FILE
-else
+
+for index in "${!DRIVE_URLS[@]}"; do
+    name=${IMAGE_NAMES[$index]}
+    destination="$IMAGES_DIR/$name"
+    if [[ -e $destination || -L $destination ]]; then
+        [[ -f $destination && ! -L $destination ]] || { echo "Invalid destination: $destination" >&2; exit 1; }
+        xz -t -- "$destination"
+        printf 'ရှိပြီးသား image ကို ထားခဲ့ပါတယ်: %s\n' "$name"
+        continue
+    fi
     command -v gdown >/dev/null || {
         echo 'gdown လိုပါတယ်။ pipx install gdown ဖြင့် တစ်ကြိမ် install လုပ်ပါ။' >&2
         exit 1
     }
-    ARCHIVE="$TEMP_DIR/drive_images.zip"
-    gdown "$DRIVE_SOURCE" -O "$ARCHIVE"
-fi
-
-# Validate the entire ZIP before writing; preserve existing images.
-python3 - "$ARCHIVE" "$IMAGES_DIR" <<'PY'
-import pathlib
-import shutil
-import stat
-import sys
-import zipfile
-
-archive, destination = map(pathlib.Path, sys.argv[1:])
-allowed_suffixes = ('.img', '.img.xz', '.img.gz', '.sha', '.sha256', '.sha256sum', '.asc')
-try:
-    with zipfile.ZipFile(archive) as z:
-        entries = z.infolist()
-        if not entries:
-            raise ValueError('ZIP is empty')
-        for entry in entries:
-            path = pathlib.PurePosixPath(entry.filename)
-            if (path.is_absolute() or '..' in path.parts or not path.parts
-                    or len(path.parts) != 1 or '\\' in entry.filename
-                    or entry.is_dir() or not entry.filename.endswith(allowed_suffixes)
-                    or stat.S_ISLNK(entry.external_attr >> 16)):
-                raise ValueError(f'Unsupported ZIP path: {entry.filename}')
-            target = destination.joinpath(*path.parts)
-            for part in (target, *target.parents):
-                if part == destination:
-                    break
-                if part != target and part.exists() and not part.is_dir():
-                    raise ValueError(f'Destination parent is not a directory: {part}')
-                if part.is_symlink():
-                    raise ValueError(f'Destination symlink is not allowed: {part}')
-            if target.exists() and target.is_dir() != entry.is_dir():
-                raise ValueError(f'File/directory conflict: {target}')
-        bad = z.testzip()
-        if bad:
-            raise ValueError(f'Corrupt ZIP entry: {bad}')
-        written = skipped = 0
-        for entry in entries:
-            target = destination / entry.filename
-            if entry.is_dir():
-                target.mkdir(parents=True, exist_ok=True)
-            elif target.exists():
-                skipped += 1
-            else:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                with z.open(entry) as source, target.open('xb') as output:
-                    shutil.copyfileobj(source, output)
-                written += 1
-        print(f'Extracted: {written}; existing files kept: {skipped}')
-except (OSError, ValueError, zipfile.BadZipFile, RuntimeError) as exc:
-    raise SystemExit(f'Images ZIP error: {exc}')
-PY
-if [[ $DRIVE_SOURCE != --local ]]; then
-    mv -- "$ARCHIVE" "$ZIP_FILE"
-fi
+    gdown "${DRIVE_URLS[$index]}" -O "$TEMP_DIR/$name"
+    xz -t -- "$TEMP_DIR/$name"
+    # Publish only a complete XZ file; do not overwrite a concurrent download.
+    ln -- "$TEMP_DIR/$name" "$destination"
+    printf 'Download ပြီးပါပြီ: %s\n' "$name"
+done
 printf 'Images အသင့်ဖြစ်ပါပြီ: %s\n' "$IMAGES_DIR"

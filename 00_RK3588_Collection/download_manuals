@@ -2,7 +2,8 @@
 set -euo pipefail
 COLLECTION_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 ZIP_FILE="$COLLECTION_DIR/drive_download.zip"
-DRIVE_SOURCE=${1:-${MANUALS_DRIVE_URL:-}}
+DEFAULT_DRIVE_URL="https://drive.google.com/file/d/176mUoZjTtp7tdkhx0SEAr9wjbigjlTD9/view?usp=sharing"
+DRIVE_SOURCE=${1:-${MANUALS_DRIVE_URL:-$DEFAULT_DRIVE_URL}}
 
 if [[ ${1:-} == --help ]]; then
     printf 'Usage: %s [GOOGLE_DRIVE_URL_OR_ID | --local]\n' "$0"
@@ -12,9 +13,6 @@ fi
 if [[ $# -gt 1 ]]; then
     echo "Expected one Google Drive URL/file ID or --local." >&2
     exit 2
-fi
-if [[ -z $DRIVE_SOURCE ]]; then
-    read -r -p 'Google Drive ZIP link သို့မဟုတ် file ID: ' DRIVE_SOURCE
 fi
 [[ -n $DRIVE_SOURCE ]] || { echo 'Google Drive link လိုပါတယ်။' >&2; exit 1; }
 command -v python3 >/dev/null || { echo 'python3 လိုပါတယ်။' >&2; exit 1; }
