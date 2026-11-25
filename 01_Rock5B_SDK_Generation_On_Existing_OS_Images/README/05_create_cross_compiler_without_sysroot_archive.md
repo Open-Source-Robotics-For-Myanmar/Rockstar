@@ -19,7 +19,7 @@
 - Package versions ဟောင်းများ repository မှ ပျောက်သွားလျှင် snapshot သို့မဟုတ် သိမ်းထားသော packages မရှိဘဲ အတိအကျပြန်ဖန်တီးရန် ခက်နိုင်သည်။
 
 References:
-- `./01_Rock5B_Debian/README/05_create_cross_compiler_without_sysroot_archive.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/05_create_cross_compiler_without_sysroot_archive.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

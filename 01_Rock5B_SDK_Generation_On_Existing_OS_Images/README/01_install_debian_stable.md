@@ -116,7 +116,7 @@ sudo journalctl -k -b | grep -Ei 'rknpu|npu|gpu|drm|error|fault'
 ဖော်ပြထားသော images များကို ဤနေရာမှ download အပြည့်/board boot စမ်းထားခြင်းမရှိပါ။
 
 References:
-- `./01_Rock5B_Debian/README/01_install_debian_stable.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/01_install_debian_stable.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

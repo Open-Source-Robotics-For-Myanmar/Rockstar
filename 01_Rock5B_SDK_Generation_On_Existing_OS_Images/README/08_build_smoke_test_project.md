@@ -7,7 +7,7 @@
 Host ပေါ်ရှိ terminal အသစ်တွင် path/SSH target ကို မိမိစက်အတွက်ပြင်ပြီး SDK ကို activate လုပ်ပါ။
 
 ```bash
-export RK3588_SDK="$HOME/Desktop/Git/Rockstar/01_Rock5B_Debian/RK3588_SDK_on_Ubuntu2204"
+export RK3588_SDK="$HOME/Desktop/Git/Rockstar/01_Rock5B_SDK_Generation_On_Existing_OS_Images/RK3588_SDK_on_Ubuntu2204"
 test -s "$RK3588_SDK/env.sh"
 source "$RK3588_SDK/env.sh"
 export ROCK5B_TARGET=mr_robot@192.168.1.15
@@ -217,6 +217,6 @@ Model initialization/version query အောင်မြင်ခြင်းသ
 SDK setup လမ်းညွှန်တွင် board kernel/driver ပြောင်းလဲမှု မပါဝင်ပါ။ Hardware driver သို့မဟုတ် firmware မရှိလျှင် smoke project ကို package လုပ်ခြင်းတစ်ခုတည်းဖြင့် ဖြေရှင်း၍မရပါ။
 
 References:
-- `./01_Rock5B_Debian/README/08_build_smoke_test_project.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/08_build_smoke_test_project.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`

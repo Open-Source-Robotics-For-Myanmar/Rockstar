@@ -3,7 +3,7 @@
 ထဲမှာ ubuntu 22.04 မှာ cross-compilation sdk ဆောက်ပြီး 
 simple cpp cli app တစ်ခု build ကြည့်ပြီးသွားမယ်။
 
-deploy လုပ်မယ့် 01_Rock5B_Debian/README/06_deploy_sample_cpp.md ကိုဆက် update လုပ်မယ်။
+deploy လုပ်မယ့် 01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/06_deploy_sample_cpp.md ကိုဆက် update လုပ်မယ်။
 
 
 05_create_RK3588_SDK_env_without_sysroot.sh

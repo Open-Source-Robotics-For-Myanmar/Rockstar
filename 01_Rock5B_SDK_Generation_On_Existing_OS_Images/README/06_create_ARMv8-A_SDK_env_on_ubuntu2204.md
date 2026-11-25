@@ -240,7 +240,7 @@ OpenSSL၊ OpenCV စသည့် third-party libraries ထပ်လိုလျ
 အဆင့် ၅ တွင် C နှင့် C++ output နှစ်ခုလုံး QEMU ပေါ်မှန်ကန်စွာထွက်လျှင် basic cross-compile/link/emulation environment အဆင်သင့်ဖြစ်သည်။ Physical ARM64 Linux စက်ပေါ် deployment compatibility ကိုတော့ နောက်တစ်ဆင့်အဖြစ် ထပ်စစ်ရမည်။
 
 References:
-- `./01_Rock5B_Debian/README/06_create_ARMv8-A_SDK_env_on_ubuntu2204.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/06_create_ARMv8-A_SDK_env_on_ubuntu2204.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

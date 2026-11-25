@@ -96,6 +96,6 @@
 - [၀၆ — Sample C++ ကို SCP ဖြင့် deploy](06_deploy_sample_cpp.md)
 
 References:
-- `./01_Rock5B_Debian/README/04_QuestionAnswer.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/04_QuestionAnswer.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`

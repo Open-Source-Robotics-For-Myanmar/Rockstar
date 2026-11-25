@@ -130,8 +130,8 @@ RKNN, libdatachannel ကဲ့သို့ third-party dependency integration �
 - [08_build_smoke_test_project.md](08_build_smoke_test_project.md) အတိုင်း build ပြီး ထွက်လာတဲ့ binary ကို board ပေါ်ကို copy ပြီး တကယ် run ကြည့်ပါ။ ဒါက တစ်ခုတည်းသော အတည်ပြုချက်။
 
 References:
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
-- `./01_Rock5B_Debian/README/07_create_RK3588_SDK_env_on_ubuntu2204.md`
-- `./01_Rock5B_Debian/README/08_build_smoke_test_project.md`
-- `./01_Rock5B_Debian/scripts/05_create_RK3588_SDK_env_without_sysroot.sh`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/07_create_RK3588_SDK_env_on_ubuntu2204.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/08_build_smoke_test_project.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts/05_create_RK3588_SDK_env_without_sysroot.sh`
 

@@ -354,7 +354,7 @@ exit # Transcript ပိတ်ရန်။
 **Deploy ခွင့်:** လိုအပ်သည့် feature အားလုံး PASS၊ မရှင်းရသေးသော crash/I/O/accelerator error မရှိ၊ driver/runtime versions မှတ်တမ်းရှိရမည်။ ဤစာတမ်းရှိခြင်းက board စမ်းပြီးပြီဟု မဆိုလိုပါ။
 
 References:
-- `./01_Rock5B_Debian/README/02_verify_builtin_pheripherials.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/02_verify_builtin_pheripherials.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

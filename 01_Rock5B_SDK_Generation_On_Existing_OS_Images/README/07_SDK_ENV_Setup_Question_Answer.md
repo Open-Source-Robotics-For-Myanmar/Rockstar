@@ -16,9 +16,9 @@
 
 <p><span style="color: red"><strong>မေးခွန်း:</strong> အခု C++ project တစ်ခုကို စပြီး build တော့မယ်ဆိုရင် project ကို `src/` folder ထဲ link ထိုးပြီး build လုပ်လို့ရမလား။</span></p>
 
-<p><span style="color: blue"><strong>အဖြေ:</strong> ရပါတယ်။ Project source ကို မရွှေ့ဘဲ SDK ရဲ့ `src/` အောက်မှာ symlink လုပ်ထားနိုင်ပါတယ်။ ဥပမာ project ရဲ့ CMakeLists.txt က `$HOME/Projects/my-cpp-app` ထဲမှာရှိပြီး SDK path က `$HOME/Desktop/Git/Rockstar/01_Rock5B_Debian/RK3588_SDK_on_Ubuntu2204` ဖြစ်တယ်ဆိုရင်—</span></p>
+<p><span style="color: blue"><strong>အဖြေ:</strong> ရပါတယ်။ Project source ကို မရွှေ့ဘဲ SDK ရဲ့ `src/` အောက်မှာ symlink လုပ်ထားနိုင်ပါတယ်။ ဥပမာ project ရဲ့ CMakeLists.txt က `$HOME/Projects/my-cpp-app` ထဲမှာရှိပြီး SDK path က `$HOME/Desktop/Git/Rockstar/01_Rock5B_SDK_Generation_On_Existing_OS_Images/RK3588_SDK_on_Ubuntu2204` ဖြစ်တယ်ဆိုရင်—</span></p>
 
-<pre><code>export RK3588_SDK="$HOME/Desktop/Git/Rockstar/01_Rock5B_Debian/RK3588_SDK_on_Ubuntu2204"
+<pre><code>export RK3588_SDK="$HOME/Desktop/Git/Rockstar/01_Rock5B_SDK_Generation_On_Existing_OS_Images/RK3588_SDK_on_Ubuntu2204"
 export PROJECT_SRC="$HOME/Projects/my-cpp-app"
 test -f "$PROJECT_SRC/CMakeLists.txt"
 ln -s "$PROJECT_SRC" "$RK3588_SDK/src/my-cpp-app"
@@ -95,6 +95,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)</code></pre>
 <p><span style="color: blue"><strong>သတိပြုရန်:</strong> GUI တစ်ခုတည်းနဲ့ target ရဲ့ ABI/runtime mismatch၊ မရှိတဲ့ RKNN/RGA/MPP library၊ board driver သို့မဟုတ် offline deployment လိုအပ်ချက်တွေကို ဖြေရှင်းမပေးနိုင်ပါ။ IDE နဲ့ build အောင်မြင်တာတစ်ခုတည်းက board ပေါ်မှာ run မယ်လို့ အာမမခံပါ။</span></p>
 
 References:
-- `./01_Rock5B_Debian/README/07_SDK_ENV_Setup_Question_Answer.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/07_SDK_ENV_Setup_Question_Answer.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`

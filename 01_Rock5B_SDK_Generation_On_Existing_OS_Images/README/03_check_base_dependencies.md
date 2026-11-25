@@ -73,7 +73,7 @@ Archive က runtime baseline ဖြစ်သည်။ Minimal OS မှာ build
 Run ပြီးလျှင် result folder ထဲက `SDK_REQUIREMENTS.md` ကို အရင်ဖတ်ပါ။ ထို့နောက် [၀၄ — Archive သုံးပြီး sysroot ပြင်ရန်](04_create_cross_compiler_using_sysroot_archive.md) သို့မဟုတ် [၀၅ — Archive မပါဘဲ package မှ sysroot ပြင်ရန်](05_create_cross_compiler_without_sysroot_archive.md) ကိုရွေးပါ။
 
 References:
-- `./01_Rock5B_Debian/README/03_check_base_dependencies.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/03_check_base_dependencies.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

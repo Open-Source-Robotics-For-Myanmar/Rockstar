@@ -19,7 +19,7 @@
 - Board package update ဖြစ်လျှင် snapshot ဟောင်းနေနိုင်ပြီး ပြန်ကူးယူရသည်။ Board ၏ မလိုအပ်သောဖိုင်၊ configuration သို့မဟုတ် credentials ပါလာနိုင်သည်။
 
 References:
-- `./01_Rock5B_Debian/README/04_create_cross_compiler_using_sysroot_archive.md`
-- `./01_Rock5B_Debian/README/00_HOW_TO_BUILD_LINUX_SDK.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/04_create_cross_compiler_using_sysroot_archive.md`
+- `./01_Rock5B_SDK_Generation_On_Existing_OS_Images/README/00_HOW_TO_BUILD_LINUX_SDK.md`
 - `./md_lists.md`
 

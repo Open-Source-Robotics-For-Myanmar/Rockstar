@@ -3,7 +3,7 @@
 **Host PC မှ run ပါ။ 01–05 အတွက် Python မလိုပါ။ 06 က Python Tkinter GUI ဖြစ်ပါတယ်။ Board တွင် packages မတင်ပါ။**
 
 ```bash
-cd 01_Rock5B_Debian/scripts
+cd 01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts
 ./01_flash_sdcard.sh
 ./02_check_hardwares.sh
 ./03_check_base_dependencies.sh
@@ -44,7 +44,7 @@ Host တွင် Bash၊ OpenSSH၊ coreutils၊ util-linux၊ xz လိုသ�
 
 ```bash
 sudo apt install python3-tk python3-venv
-cd 01_Rock5B_Debian/scripts
+cd 01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts
 /usr/bin/python3 -m venv .venv
 touch .venv/.gitkeep
 .venv/bin/python -m pip install -r requirements.txt
@@ -53,7 +53,7 @@ touch .venv/.gitkeep
 ပြီးရင် repo root ကနေ GUI ကို ခေါ်ပါ:
 
 ```bash
-./01_Rock5B_Debian/automation
+./01_Rock5B_SDK_Generation_On_Existing_OS_Images/automation
 ```
 
 `automation` မှာ path variable နဲ့ command နှစ်ကြောင်းပဲ ပါပါတယ်: `.venv` ကို activate လုပ်ပြီး `.venv/bin/python` နဲ့ `06_create_RK3588_SDK_env_without_sysroot.py` ကို run ပါတယ်။ ဘယ် directory ကနေခေါ်ခေါ် script ရှိတဲ့နေရာက path ကို သုံးပါတယ်။
@@ -61,10 +61,10 @@ touch .venv/.gitkeep
 လက်ရှိ `requirements.txt` မှာ third-party package မလိုသေးပါ။ Tkinter ကို system ရဲ့ `python3-tk` package ကနေ သုံးပါတယ်။ Roboto Regular/Bold က `scripts/fonts/` ထဲမှာ ပါပြီးသားပါ။
 
 References:
-- `01_Rock5B_Debian/automation`
-- `01_Rock5B_Debian/scripts/06_create_RK3588_SDK_env_without_sysroot.py`
-- `01_Rock5B_Debian/scripts/requirements.txt`
-- `01_Rock5B_Debian/scripts/05_create_RK3588_SDK_env_without_sysroot.sh`
+- `01_Rock5B_SDK_Generation_On_Existing_OS_Images/automation`
+- `01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts/06_create_RK3588_SDK_env_without_sysroot.py`
+- `01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts/requirements.txt`
+- `01_Rock5B_SDK_Generation_On_Existing_OS_Images/scripts/05_create_RK3588_SDK_env_without_sysroot.sh`
 - `python_gui_rules.md`
 - [SDK environment guide](../README/07_create_RK3588_SDK_env_on_ubuntu2204.md)
 - [smoke-test guide](../README/08_build_smoke_test_project.md)
